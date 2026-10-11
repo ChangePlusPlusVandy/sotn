@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "api:types": "openapi-typescript http://localhost:8000/openapi.json -o src/lib/api-types.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.9.14",
