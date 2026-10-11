@@ -9,8 +9,8 @@ VALID = {
 }
 
 
-def test_create_intake_returns_reference_only(client, db):
-    res = client.post("/intakes", json=VALID)
+def test_create_inquiry_returns_reference_only(client, db):
+    res = client.post("/inquiries", json=VALID)
 
     assert res.status_code == 201
     body = res.json()
@@ -23,18 +23,18 @@ def test_create_intake_returns_reference_only(client, db):
     assert inquiry.answers == {"sport_interest": "tennis"}
 
 
-def test_create_intake_requires_contact_method(client):
-    res = client.post("/intakes", json={**VALID, "contact_email": None})
+def test_create_inquiry_requires_contact_method(client):
+    res = client.post("/inquiries", json={**VALID, "contact_email": None})
     assert res.status_code == 422
 
 
-def test_create_intake_rejects_unknown_role(client):
-    res = client.post("/intakes", json={**VALID, "role": "astronaut"})
+def test_create_inquiry_rejects_unknown_role(client):
+    res = client.post("/inquiries", json={**VALID, "role": "astronaut"})
     assert res.status_code == 422
 
 
-def test_create_intake_rejects_bad_zip(client):
-    res = client.post("/intakes", json={**VALID, "zip_code": "abc"})
+def test_create_inquiry_rejects_bad_zip(client):
+    res = client.post("/inquiries", json={**VALID, "zip_code": "abc"})
     assert res.status_code == 422
 
 
@@ -55,57 +55,59 @@ def add_inquiry(db, **overrides) -> Inquiry:
 def test_admin_routes_require_auth(client, db):
     inquiry = add_inquiry(db)
 
-    assert client.get("/admin/intakes").status_code == 401
-    assert client.get(f"/admin/intakes/{inquiry.id}").status_code == 401
-    assert client.patch(f"/admin/intakes/{inquiry.id}", json={}).status_code == 401
+    assert client.get("/admin/inquiries").status_code == 401
+    assert client.get(f"/admin/inquiries/{inquiry.id}").status_code == 401
+    assert client.patch(f"/admin/inquiries/{inquiry.id}", json={}).status_code == 401
 
 
-def test_list_intakes_filters_and_searches(staff_client, db):
+def test_list_inquiries_filters_and_searches(staff_client, db):
     add_inquiry(db, contact_name="Ada Athlete")
     add_inquiry(db, contact_name="Val Volunteer", role="volunteer")
     add_inquiry(db, contact_name="Ada Donor", role="donor", status="closed")
 
-    res = staff_client.get("/admin/intakes", params={"role": "volunteer"})
+    res = staff_client.get("/admin/inquiries", params={"role": "volunteer"})
     assert [i["contact_name"] for i in res.json()["items"]] == ["Val Volunteer"]
 
-    res = staff_client.get("/admin/intakes", params={"status": "closed"})
+    res = staff_client.get("/admin/inquiries", params={"status": "closed"})
     assert [i["contact_name"] for i in res.json()["items"]] == ["Ada Donor"]
 
-    res = staff_client.get("/admin/intakes", params={"q": "ada"})
+    res = staff_client.get("/admin/inquiries", params={"q": "ada"})
     assert res.json()["total"] == 2
 
 
-def test_list_intakes_paginates(staff_client, db):
+def test_list_inquiries_paginates(staff_client, db):
     for n in range(3):
         add_inquiry(db, contact_name=f"Person {n}")
 
-    body = staff_client.get("/admin/intakes", params={"page": 2, "page_size": 2}).json()
+    body = staff_client.get(
+        "/admin/inquiries", params={"page": 2, "page_size": 2}
+    ).json()
 
     assert body["total"] == 3
     assert body["page"] == 2
     assert len(body["items"]) == 1
 
 
-def test_get_intake_returns_full_record(staff_client, db):
+def test_get_inquiry_returns_full_record(staff_client, db):
     inquiry = add_inquiry(db, answers={"sport_interest": "tennis"})
 
-    res = staff_client.get(f"/admin/intakes/{inquiry.id}")
+    res = staff_client.get(f"/admin/inquiries/{inquiry.id}")
 
     assert res.status_code == 200
     assert res.json()["contact_email"] == "test@example.com"
     assert res.json()["answers"] == {"sport_interest": "tennis"}
 
 
-def test_get_intake_404(staff_client):
-    res = staff_client.get("/admin/intakes/00000000-0000-0000-0000-000000000000")
+def test_get_inquiry_404(staff_client):
+    res = staff_client.get("/admin/inquiries/00000000-0000-0000-0000-000000000000")
     assert res.status_code == 404
 
 
-def test_update_intake_changes_only_sent_fields(staff_client, db):
+def test_update_inquiry_changes_only_sent_fields(staff_client, db):
     inquiry = add_inquiry(db, contact_phone="615-555-0100")
 
     res = staff_client.patch(
-        f"/admin/intakes/{inquiry.id}", json={"status": "contacted"}
+        f"/admin/inquiries/{inquiry.id}", json={"status": "contacted"}
     )
 
     assert res.status_code == 200
@@ -113,19 +115,19 @@ def test_update_intake_changes_only_sent_fields(staff_client, db):
     assert res.json()["contact_phone"] == "615-555-0100"
 
 
-def test_update_intake_rejects_null_required_field(staff_client, db):
+def test_update_inquiry_rejects_null_required_field(staff_client, db):
     inquiry = add_inquiry(db)
 
-    res = staff_client.patch(f"/admin/intakes/{inquiry.id}", json={"status": None})
+    res = staff_client.patch(f"/admin/inquiries/{inquiry.id}", json={"status": None})
 
     assert res.status_code == 422
 
 
-def test_update_intake_must_keep_a_contact_method(staff_client, db):
+def test_update_inquiry_must_keep_a_contact_method(staff_client, db):
     inquiry = add_inquiry(db)
 
     res = staff_client.patch(
-        f"/admin/intakes/{inquiry.id}", json={"contact_email": None}
+        f"/admin/inquiries/{inquiry.id}", json={"contact_email": None}
     )
 
     assert res.status_code == 422

@@ -6,7 +6,7 @@ const TriagePage = async () => {
   return (
     <>
       <h1 className="text-2xl font-semibold">Intake triage</h1>
-      <p>TODO: All submissions with search and filters (GET /admin/intakes); open one to review, route and add notes.</p>
+      <p>TODO: All submissions with search and filters (GET /admin/inquiries); open one to review, route and add notes.</p>
     </>
   );
 };

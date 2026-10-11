@@ -8,7 +8,7 @@ from app.models.inquiry import InquiryRole, InquiryStatus
 ZIP_PATTERN = r"^\d{5}(-\d{4})?$"
 
 
-class IntakeCreate(BaseModel):
+class InquiryCreate(BaseModel):
     role: InquiryRole
     contact_name: str = Field(min_length=1, max_length=200)
     contact_email: str | None = Field(default=None, max_length=320)
@@ -23,14 +23,14 @@ class IntakeCreate(BaseModel):
         return self
 
 
-class IntakeConfirmation(BaseModel):
+class InquiryConfirmation(BaseModel):
     """Returned to the public submitter: a reference, never the submitted details."""
 
     id: uuid.UUID
     status: InquiryStatus
 
 
-class IntakeRead(BaseModel):
+class InquiryRead(BaseModel):
     """Full record, for staff only."""
 
     model_config = ConfigDict(from_attributes=True)
@@ -47,7 +47,7 @@ class IntakeRead(BaseModel):
     updated_at: datetime
 
 
-class IntakeUpdate(BaseModel):
+class InquiryUpdate(BaseModel):
     """Partial update: only fields present in the request body are changed."""
 
     status: InquiryStatus | None = None

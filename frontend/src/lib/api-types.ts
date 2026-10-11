@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/intakes": {
+    "/inquiries": {
         parameters: {
             query?: never;
             header?: never;
@@ -13,23 +13,23 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Intake */
-        post: operations["create_intake_intakes_post"];
+        /** Create Inquiry */
+        post: operations["create_inquiry_inquiries_post"];
         delete?: never;
         options?: never;
         head?: never;
         patch?: never;
         trace?: never;
     };
-    "/admin/intakes": {
+    "/admin/inquiries": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** List Intakes */
-        get: operations["list_intakes_admin_intakes_get"];
+        /** List Inquiries */
+        get: operations["list_inquiries_admin_inquiries_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -38,22 +38,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/intakes/{inquiry_id}": {
+    "/admin/inquiries/{inquiry_id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get Intake */
-        get: operations["get_intake_admin_intakes__inquiry_id__get"];
+        /** Get Inquiry */
+        get: operations["get_inquiry_admin_inquiries__inquiry_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Intake */
-        patch: operations["update_intake_admin_intakes__inquiry_id__patch"];
+        /** Update Inquiry */
+        patch: operations["update_inquiry_admin_inquiries__inquiry_id__patch"];
         trace?: never;
     };
     "/health": {
@@ -83,20 +83,10 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
-         * InquiryRole
-         * @enum {string}
-         */
-        InquiryRole: "athlete" | "volunteer" | "partner" | "donor";
-        /**
-         * InquiryStatus
-         * @enum {string}
-         */
-        InquiryStatus: "new" | "needs_review" | "assigned" | "contacted" | "referred" | "closed";
-        /**
-         * IntakeConfirmation
+         * InquiryConfirmation
          * @description Returned to the public submitter: a reference, never the submitted details.
          */
-        IntakeConfirmation: {
+        InquiryConfirmation: {
             /**
              * Id
              * Format: uuid
@@ -104,8 +94,8 @@ export interface components {
             id: string;
             status: components["schemas"]["InquiryStatus"];
         };
-        /** IntakeCreate */
-        IntakeCreate: {
+        /** InquiryCreate */
+        InquiryCreate: {
             role: components["schemas"]["InquiryRole"];
             /** Contact Name */
             contact_name: string;
@@ -124,10 +114,10 @@ export interface components {
             };
         };
         /**
-         * IntakeRead
+         * InquiryRead
          * @description Full record, for staff only.
          */
-        IntakeRead: {
+        InquiryRead: {
             /**
              * Id
              * Format: uuid
@@ -159,10 +149,20 @@ export interface components {
             updated_at: string;
         };
         /**
-         * IntakeUpdate
+         * InquiryRole
+         * @enum {string}
+         */
+        InquiryRole: "athlete" | "volunteer" | "partner" | "donor";
+        /**
+         * InquiryStatus
+         * @enum {string}
+         */
+        InquiryStatus: "new" | "needs_review" | "assigned" | "contacted" | "referred" | "closed";
+        /**
+         * InquiryUpdate
          * @description Partial update: only fields present in the request body are changed.
          */
-        IntakeUpdate: {
+        InquiryUpdate: {
             status?: components["schemas"]["InquiryStatus"] | null;
             /** Contact Name */
             contact_name?: string | null;
@@ -173,10 +173,10 @@ export interface components {
             /** Zip Code */
             zip_code?: string | null;
         };
-        /** Page[IntakeRead] */
-        Page_IntakeRead_: {
+        /** Page[InquiryRead] */
+        Page_InquiryRead_: {
             /** Items */
-            items: components["schemas"]["IntakeRead"][];
+            items: components["schemas"]["InquiryRead"][];
             /** Total */
             total: number;
             /** Page */
@@ -206,7 +206,7 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    create_intake_intakes_post: {
+    create_inquiry_inquiries_post: {
         parameters: {
             query?: never;
             header?: never;
@@ -215,7 +215,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["IntakeCreate"];
+                "application/json": components["schemas"]["InquiryCreate"];
             };
         };
         responses: {
@@ -225,7 +225,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["IntakeConfirmation"];
+                    "application/json": components["schemas"]["InquiryConfirmation"];
                 };
             };
             /** @description Validation Error */
@@ -239,7 +239,7 @@ export interface operations {
             };
         };
     };
-    list_intakes_admin_intakes_get: {
+    list_inquiries_admin_inquiries_get: {
         parameters: {
             query?: {
                 status?: components["schemas"]["InquiryStatus"] | null;
@@ -261,7 +261,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Page_IntakeRead_"];
+                    "application/json": components["schemas"]["Page_InquiryRead_"];
                 };
             };
             /** @description Validation Error */
@@ -275,7 +275,7 @@ export interface operations {
             };
         };
     };
-    get_intake_admin_intakes__inquiry_id__get: {
+    get_inquiry_admin_inquiries__inquiry_id__get: {
         parameters: {
             query?: never;
             header?: never;
@@ -292,7 +292,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["IntakeRead"];
+                    "application/json": components["schemas"]["InquiryRead"];
                 };
             };
             /** @description Validation Error */
@@ -306,7 +306,7 @@ export interface operations {
             };
         };
     };
-    update_intake_admin_intakes__inquiry_id__patch: {
+    update_inquiry_admin_inquiries__inquiry_id__patch: {
         parameters: {
             query?: never;
             header?: never;
@@ -317,7 +317,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["IntakeUpdate"];
+                "application/json": components["schemas"]["InquiryUpdate"];
             };
         };
         responses: {
@@ -327,7 +327,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["IntakeRead"];
+                    "application/json": components["schemas"]["InquiryRead"];
                 };
             };
             /** @description Validation Error */

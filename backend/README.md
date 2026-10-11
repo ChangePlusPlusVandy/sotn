@@ -20,11 +20,11 @@ migrations/        Alembic; versions/ is generated from app/models/
 tests/             pytest; each test runs in a rolled-back transaction on empty tables
 ```
 
-**Reference implementation:** intakes. Copy its patterns:
+**Reference implementation:** inquiries. Copy its patterns:
 - `app/models/inquiry.py`
-- `app/schemas/intake.py`
-- `app/routers/intakes.py`
-- `tests/test_intakes.py`
+- `app/schemas/inquiry.py`
+- `app/routers/inquiries.py`
+- `tests/test_inquiries.py`
 
 ## Adding an entity
 
@@ -37,7 +37,8 @@ tests/             pytest; each test runs in a rolled-back transaction on empty 
 
 ## Conventions
 
-- **Public vs. staff routes:** staff routes live on a router with `prefix="/admin/..."` and `dependencies=[Depends(get_current_staff)]`, so every route on it requires sign-in. Add `staff_id: CurrentStaff` to a route only when you need the user ID. Public responses must not echo back personal data; see `IntakeConfirmation`.
+- **Public vs. staff routes:** staff routes live on a router with `prefix="/admin/..."` and `dependencies=[Depends(get_current_staff)]`, so every route on it requires sign-in. Add `staff_id: CurrentStaff` to a route only when you need the user ID. Public responses must not echo back personal data; see `InquiryConfirmation`.
+- **Naming:** a submitted record is an **inquiry** in code, the database and the API (`Inquiry`, `InquiryRead`, `/admin/inquiries`). "Intake" refers only to the public form and user-facing copy.
 - **Enums:** `StrEnum` classes with lowercase values, stored through `str_enum()` so the database holds the same values as the API.
 - **Partial updates:** `body.model_dump(exclude_unset=True)` changes only the fields the client sent.
 - **Lists:** return `Page[ReadSchema]`, and paginate with `page` and `page_size` query params.

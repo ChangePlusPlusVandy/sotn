@@ -14,6 +14,7 @@ class InquiryRole(enum.StrEnum):
     VOLUNTEER = "volunteer"
     PARTNER = "partner"
     DONOR = "donor"
+    # Add the correct values
 
 
 class InquiryStatus(enum.StrEnum):
@@ -41,7 +42,7 @@ class Inquiry(Base):
 
     # Role-specific form fields; the approved field list per role is still TBD (PRD INT-02).
     answers: Mapped[dict] = mapped_column(JSONB, default=dict)
-    
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

@@ -35,7 +35,7 @@ def make_token(key=KEY, **claims) -> str:
 
 
 def get_with_token(client, token: str):
-    return client.get("/admin/intakes", headers={"Authorization": f"Bearer {token}"})
+    return client.get("/admin/inquiries", headers={"Authorization": f"Bearer {token}"})
 
 
 def test_valid_token_is_accepted(client):
@@ -43,7 +43,7 @@ def test_valid_token_is_accepted(client):
 
 
 def test_missing_token_is_rejected(client):
-    assert client.get("/admin/intakes").status_code == 401
+    assert client.get("/admin/inquiries").status_code == 401
 
 
 def test_malformed_token_is_rejected(client):
