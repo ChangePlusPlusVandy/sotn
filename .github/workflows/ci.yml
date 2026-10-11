@@ -25,7 +25,7 @@ jobs:
           --health-timeout 5s
           --health-retries 10
     env:
-      DATABASE_URL: postgresql+psycopg://sotn:sotn@localhost:5432/sotn
+      DATABASE_URL: postgresql+pg8000://sotn:sotn@localhost:5432/sotn
       # Tests never contact Clerk; this only has to be a valid URL.
       CLERK_ISSUER: https://ci.clerk.accounts.dev
     steps:
