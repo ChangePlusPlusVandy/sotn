@@ -6,7 +6,6 @@ Repo for SOTN, a recruitment, intake and routing platform with:
 **backend/** : FastAPI REST API (Python, PostgreSQL)
 **frontend/** : Next.js app (TypeScript, Tailwind CSS, shadcn/ui)
 
-Product context and requirements live in **docs/**, starting with `docs/working-prd.md`.
 
 ## Code Structure
 **backend/app/core/**: App config, database session, and Clerk auth
