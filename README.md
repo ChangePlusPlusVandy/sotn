@@ -79,6 +79,12 @@ Runs at `http://localhost:3000`.
    ```
    Read the generated file in `migrations/versions/` before committing it.
 
+4. **View the data** (from the repo root, with the database running)
+   ```bash
+   docker compose exec db psql -U sotn -d sotn
+   ```
+   Inside psql: `\dt` lists tables, `\d inquiry` shows a table's columns, `SELECT * FROM inquiry;` shows its rows, and `\q` quits.
+
 ## Notes
 
 Backend uses FastAPI, SQLAlchemy, Alembic, PostgreSQL, and Clerk auth. Frontend uses Next.js, Clerk, Tailwind, and shadcn/ui. Staff sign in with Clerk; public visitors never need an account. Any signed-in Clerk user counts as staff for now, so keep Clerk sign-ups set to invitation only.
