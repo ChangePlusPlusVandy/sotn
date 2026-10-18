@@ -13,7 +13,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Inquiry */
+        /**
+         * Create Inquiry
+         * @description Submit the public intake form. Returns only a reference, never the submitted details.
+         */
         post: operations["create_inquiry_inquiries_post"];
         delete?: never;
         options?: never;
@@ -28,7 +31,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Inquiries */
+        /**
+         * List Inquiries
+         * @description List inquiries, newest first, with optional filters and search.
+         */
         get: operations["list_inquiries_admin_inquiries_get"];
         put?: never;
         post?: never;
@@ -45,15 +51,93 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Inquiry */
+        /**
+         * Get Inquiry
+         * @description Get one inquiry's full record.
+         */
         get: operations["get_inquiry_admin_inquiries__inquiry_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Inquiry */
+        /**
+         * Update Inquiry
+         * @description Update only the fields sent in the body. An inquiry must keep an email or phone.
+         */
         patch: operations["update_inquiry_admin_inquiries__inquiry_id__patch"];
+        trace?: never;
+    };
+    "/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Published Resources
+         * @description List published resources for the public results page, optionally for one role.
+         */
+        get: operations["list_published_resources_resources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Resources
+         * @description List all resources, published or not, newest first, with optional filters and search.
+         */
+        get: operations["list_resources_admin_resources_get"];
+        put?: never;
+        /**
+         * Create Resource
+         * @description Create a resource. New resources are unpublished unless is_published is sent.
+         */
+        post: operations["create_resource_admin_resources_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/resources/{resource_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Resource
+         * @description Get one resource.
+         */
+        get: operations["get_resource_admin_resources__resource_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Resource
+         * @description Permanently delete a resource. Resources hold no personal data, so this is a hard delete.
+         */
+        delete: operations["delete_resource_admin_resources__resource_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Resource
+         * @description Update only the fields sent in the body.
+         */
+        patch: operations["update_resource_admin_resources__resource_id__patch"];
         trace?: never;
     };
     "/health": {
@@ -183,6 +267,88 @@ export interface components {
             page: number;
             /** Page Size */
             page_size: number;
+        };
+        /** Page[ResourceRead] */
+        Page_ResourceRead_: {
+            /** Items */
+            items: components["schemas"]["ResourceRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** ResourceCreate */
+        ResourceCreate: {
+            /** Title */
+            title: string;
+            /** Description */
+            description?: string | null;
+            kind: components["schemas"]["ResourceKind"];
+            /** Url */
+            url: string;
+            /**
+             * Audiences
+             * @default []
+             */
+            audiences: components["schemas"]["InquiryRole"][];
+            /**
+             * Is Published
+             * @default false
+             */
+            is_published: boolean;
+        };
+        /**
+         * ResourceKind
+         * @enum {string}
+         */
+        ResourceKind: "pdf" | "video" | "link";
+        /** ResourceRead */
+        ResourceRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            kind: components["schemas"]["ResourceKind"];
+            /** Url */
+            url: string;
+            /** Audiences */
+            audiences: components["schemas"]["InquiryRole"][];
+            /** Is Published */
+            is_published: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * ResourceUpdate
+         * @description Partial update: only fields present in the request body are changed.
+         */
+        ResourceUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            kind?: components["schemas"]["ResourceKind"] | null;
+            /** Url */
+            url?: string | null;
+            /** Audiences */
+            audiences?: components["schemas"]["InquiryRole"][] | null;
+            /** Is Published */
+            is_published?: boolean | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -328,6 +494,204 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InquiryRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_published_resources_resources_get: {
+        parameters: {
+            query?: {
+                /** @description Only resources for this role */
+                role?: components["schemas"]["InquiryRole"] | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ResourceRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_resources_admin_resources_get: {
+        parameters: {
+            query?: {
+                kind?: components["schemas"]["ResourceKind"] | null;
+                is_published?: boolean | null;
+                /** @description Search title or description */
+                q?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ResourceRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_resource_admin_resources_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResourceCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_resource_admin_resources__resource_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_resource_admin_resources__resource_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_resource_admin_resources__resource_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResourceUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceRead"];
                 };
             };
             /** @description Validation Error */
