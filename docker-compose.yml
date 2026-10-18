@@ -5,7 +5,7 @@ services:
       POSTGRES_USER: sotn
       POSTGRES_PASSWORD: sotn
       POSTGRES_DB: sotn
-    ports: ["5432:5432"]
+    ports: ["127.0.0.1:5432:5432"]
     volumes: [pgdata:/var/lib/postgresql/data]
 volumes:
   pgdata:
