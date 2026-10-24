@@ -5,6 +5,7 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.db import DbSession
 from app.routers import inquiries
+from app.routers import programs
 
 app = FastAPI(title="SOTN Intake API")
 app.add_middleware(
@@ -16,6 +17,9 @@ app.add_middleware(
 
 app.include_router(inquiries.router)
 app.include_router(inquiries.admin_router)
+
+app.include_router(programs.router)
+app.include_router(programs.admin_router)
 
 
 @app.get("/health")
