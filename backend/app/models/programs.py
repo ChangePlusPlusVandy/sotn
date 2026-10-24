@@ -31,21 +31,13 @@ class Program(Base):
 
     description: Mapped[str | None] = mapped_column(Text)
 
-    audiences: Mapped[list[InquiryRole]] = mapped_column(
-        ARRAY(str_enum(InquiryRole))
-    )
+    audiences: Mapped[list[InquiryRole]] = mapped_column(ARRAY(str_enum(InquiryRole)))
 
-    regions: Mapped[list[Region]] = mapped_column(
-        ARRAY(str_enum(Region))
-    )
+    regions: Mapped[list[Region]] = mapped_column(ARRAY(str_enum(Region)))
 
-    contact_email: Mapped[str | None] = mapped_column(
-        String(320)
-    )
+    contact_email: Mapped[str | None] = mapped_column(String(320))
 
-    is_active: Mapped[bool] = mapped_column(
-        default=True
-    )
+    is_active: Mapped[bool] = mapped_column(default=True)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
