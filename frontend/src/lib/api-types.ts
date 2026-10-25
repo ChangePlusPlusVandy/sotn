@@ -56,6 +56,24 @@ export interface paths {
         patch: operations["update_inquiry_admin_inquiries__inquiry_id__patch"];
         trace?: never;
     };
+    "/admin/inquiries/{inquiry_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Notes */
+        get: operations["list_notes_admin_inquiries__inquiry_id__notes_get"];
+        put?: never;
+        /** Create Note */
+        post: operations["create_note_admin_inquiries__inquiry_id__notes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -112,6 +130,36 @@ export interface components {
             answers: {
                 [key: string]: unknown;
             };
+        };
+        /**
+         * InquiryNoteCreate
+         * @description Request body for a new note. Author comes from the signed-in staff member.
+         */
+        InquiryNoteCreate: {
+            /** Body */
+            body: string;
+        };
+        /** InquiryNoteRead */
+        InquiryNoteRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Inquiry Id
+             * Format: uuid
+             */
+            inquiry_id: string;
+            /** Author Staff Id */
+            author_staff_id: string;
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /**
          * InquiryRead
@@ -172,6 +220,17 @@ export interface components {
             contact_phone?: string | null;
             /** Zip Code */
             zip_code?: string | null;
+        };
+        /** Page[InquiryNoteRead] */
+        Page_InquiryNoteRead_: {
+            /** Items */
+            items: components["schemas"]["InquiryNoteRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
         };
         /** Page[InquiryRead] */
         Page_InquiryRead_: {
@@ -328,6 +387,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InquiryRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_notes_admin_inquiries__inquiry_id__notes_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_InquiryNoteRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_note_admin_inquiries__inquiry_id__notes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InquiryNoteCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InquiryNoteRead"];
                 };
             };
             /** @description Validation Error */
