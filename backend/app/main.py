@@ -20,6 +20,7 @@ app.include_router(inquiries.admin_router)
 app.include_router(programs.router)
 app.include_router(programs.admin_router)
 
+
 @app.get("/health")
 def health(db: DbSession):
     db.execute(text("select 1"))
