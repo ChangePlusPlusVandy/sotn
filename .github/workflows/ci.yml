@@ -36,7 +36,12 @@ jobs:
       - run: uv run ruff format --check .
       - run: uv run alembic upgrade head
       - name: Require a single migration head
-        run: test "$(uv run alembic heads | wc -l)" -eq 1 || { uv run alembic heads; echo "Multiple Alembic heads: rebase and fix down_revision."; exit 1; }
+        run: |
+          test "$(uv run alembic heads | wc -l)" -eq 1 || {
+            uv run alembic heads
+            echo "Multiple Alembic heads: rebase and fix down_revision."
+            exit 1
+          }
       - run: uv run pytest
 
   frontend:
