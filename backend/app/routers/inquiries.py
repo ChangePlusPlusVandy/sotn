@@ -35,6 +35,7 @@ admin_router = APIRouter(
 # Public: List active programs
 # --------------------------------------------------
 
+
 @router.get("", response_model=list[ProgramPublic])
 def list_programs(
     db: DbSession,
@@ -46,23 +47,18 @@ def list_programs(
     query = select(Program).where(Program.is_active.is_(True))
 
     if role is not None:
-        query = query.where(
-            Program.audiences.contains([role])
-        )
+        query = query.where(Program.audiences.contains([role]))
 
     if region is not None:
-        query = query.where(
-            Program.regions.contains([region])
-        )
+        query = query.where(Program.regions.contains([region]))
 
-    return db.scalars(
-        query.order_by(Program.name, Program.id)
-    ).all()
+    return db.scalars(query.order_by(Program.name, Program.id)).all()
 
 
 # --------------------------------------------------
 # Admin: List programs with pagination
 # --------------------------------------------------
+
 
 @admin_router.get("", response_model=Page[ProgramAdmin])
 def list_admin_programs(
@@ -82,29 +78,19 @@ def list_admin_programs(
     query = select(Program)
 
     if is_active is not None:
-        query = query.where(
-            Program.is_active == is_active
-        )
+        query = query.where(Program.is_active == is_active)
 
     if role is not None:
-        query = query.where(
-            Program.audiences.contains([role])
-        )
+        query = query.where(Program.audiences.contains([role]))
 
     if region is not None:
-        query = query.where(
-            Program.regions.contains([region])
-        )
+        query = query.where(Program.regions.contains([region]))
 
     if q:
-        query = query.where(
-            Program.name.ilike(f"%{q}%")
-        )
+        query = query.where(Program.name.ilike(f"%{q}%"))
 
     # Count all matching programs before pagination
-    total = db.scalar(
-        select(func.count()).select_from(query.subquery())
-    )
+    total = db.scalar(select(func.count()).select_from(query.subquery()))
 
     # Get only the requested page
     items = db.scalars(
@@ -128,6 +114,7 @@ def list_admin_programs(
 # Helper: Find a program by ID
 # --------------------------------------------------
 
+
 def get_program_or_404(
     db: DbSession,
     program_id: uuid.UUID,
@@ -149,6 +136,7 @@ def get_program_or_404(
 # Admin: Get one program
 # --------------------------------------------------
 
+
 @admin_router.get(
     "/{program_id}",
     response_model=ProgramAdmin,
@@ -168,6 +156,7 @@ def get_program(
 # Admin: Create a program
 # --------------------------------------------------
 
+
 @admin_router.post(
     "",
     status_code=201,
@@ -179,11 +168,7 @@ def create_program(
 ):
     """Create a program. Names must be unique."""
 
-    existing = db.scalar(
-        select(Program).where(
-            Program.name == body.name
-        )
-    )
+    existing = db.scalar(select(Program).where(Program.name == body.name))
 
     if existing is not None:
         raise HTTPException(
@@ -218,6 +203,7 @@ def create_program(
 # Admin: Update a program
 # --------------------------------------------------
 
+
 @admin_router.patch(
     "/{program_id}",
     response_model=ProgramAdmin,
@@ -250,15 +236,8 @@ def update_program(
             )
 
     # Check whether the new name is already used
-    if (
-        "name" in changes
-        and changes["name"] != program.name
-    ):
-        existing = db.scalar(
-            select(Program).where(
-                Program.name == changes["name"]
-            )
-        )
+    if "name" in changes and changes["name"] != program.name:
+        existing = db.scalar(select(Program).where(Program.name == changes["name"]))
 
         if existing is not None:
             raise HTTPException(
