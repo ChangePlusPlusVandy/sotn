@@ -13,7 +13,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Inquiry */
+        /**
+         * Create Inquiry
+         * @description Submit the public intake form. Returns only a reference, never the submitted details.
+         */
         post: operations["create_inquiry_inquiries_post"];
         delete?: never;
         options?: never;
@@ -28,7 +31,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Inquiries */
+        /**
+         * List Inquiries
+         * @description List inquiries, newest first, with optional filters and search.
+         */
         get: operations["list_inquiries_admin_inquiries_get"];
         put?: never;
         post?: never;
@@ -45,15 +51,85 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Inquiry */
+        /**
+         * Get Inquiry
+         * @description Get one inquiry's full record.
+         */
         get: operations["get_inquiry_admin_inquiries__inquiry_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Inquiry */
+        /**
+         * Update Inquiry
+         * @description Update only the fields sent in the body. An inquiry must keep an email or phone.
+         */
         patch: operations["update_inquiry_admin_inquiries__inquiry_id__patch"];
+        trace?: never;
+    };
+    "/admin/inquiries/{inquiry_id}/follow-ups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Follow Up
+         * @description Create a follow-up on an inquiry. The assignee defaults to the current staff member.
+         */
+        post: operations["create_follow_up_admin_inquiries__inquiry_id__follow_ups_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/follow-ups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Follow Ups
+         * @description List follow-ups across all inquiries, soonest due first, with optional filters.
+         */
+        get: operations["list_follow_ups_admin_follow_ups_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/follow-ups/{follow_up_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Follow Up
+         * @description Get one follow-up.
+         */
+        get: operations["get_follow_up_admin_follow_ups__follow_up_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Follow Up
+         * @description Update only the fields sent in the body. completed_at is set and cleared by the server.
+         */
+        patch: operations["update_follow_up_admin_follow_ups__follow_up_id__patch"];
         trace?: never;
     };
     "/health": {
@@ -77,6 +153,82 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * FollowUpCreate
+         * @description created_by_staff_id is set by the server; assignee defaults to the current staff member.
+         */
+        FollowUpCreate: {
+            /** Title */
+            title: string;
+            /** Details */
+            details?: string | null;
+            /**
+             * Due At
+             * Format: date-time
+             */
+            due_at: string;
+            /** Assignee Staff Id */
+            assignee_staff_id?: string | null;
+        };
+        /** FollowUpRead */
+        FollowUpRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Inquiry Id
+             * Format: uuid
+             */
+            inquiry_id: string;
+            /** Title */
+            title: string;
+            /** Details */
+            details: string | null;
+            /** Created By Staff Id */
+            created_by_staff_id: string;
+            /** Assignee Staff Id */
+            assignee_staff_id: string;
+            /**
+             * Due At
+             * Format: date-time
+             */
+            due_at: string;
+            status: components["schemas"]["FollowUpStatus"];
+            /** Completed At */
+            completed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * FollowUpStatus
+         * @enum {string}
+         */
+        FollowUpStatus: "not_started" | "in_progress" | "complete";
+        /**
+         * FollowUpUpdate
+         * @description Partial update: only fields present in the request body are changed.
+         */
+        FollowUpUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Details */
+            details?: string | null;
+            /** Due At */
+            due_at?: string | null;
+            /** Assignee Staff Id */
+            assignee_staff_id?: string | null;
+            status?: components["schemas"]["FollowUpStatus"] | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -172,6 +324,17 @@ export interface components {
             contact_phone?: string | null;
             /** Zip Code */
             zip_code?: string | null;
+        };
+        /** Page[FollowUpRead] */
+        Page_FollowUpRead_: {
+            /** Items */
+            items: components["schemas"]["FollowUpRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
         };
         /** Page[InquiryRead] */
         Page_InquiryRead_: {
@@ -328,6 +491,145 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InquiryRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_follow_up_admin_inquiries__inquiry_id__follow_ups_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowUpCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowUpRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_follow_ups_admin_follow_ups_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["FollowUpStatus"] | null;
+                inquiry_id?: string | null;
+                /** @description 'me' for the current staff member */
+                assignee?: "me" | null;
+                /** @description Only incomplete follow-ups past their due date */
+                overdue?: boolean;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_FollowUpRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_follow_up_admin_follow_ups__follow_up_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                follow_up_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowUpRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_follow_up_admin_follow_ups__follow_up_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                follow_up_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowUpUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowUpRead"];
                 };
             };
             /** @description Validation Error */
