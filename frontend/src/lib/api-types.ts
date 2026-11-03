@@ -13,7 +13,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Inquiry */
+        /**
+         * Create Inquiry
+         * @description Submit the public intake form. Returns only a reference, never the submitted details.
+         */
         post: operations["create_inquiry_inquiries_post"];
         delete?: never;
         options?: never;
@@ -28,7 +31,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Inquiries */
+        /**
+         * List Inquiries
+         * @description List inquiries, newest first, with optional filters and search.
+         */
         get: operations["list_inquiries_admin_inquiries_get"];
         put?: never;
         post?: never;
@@ -45,15 +51,45 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Inquiry */
+        /**
+         * Get Inquiry
+         * @description Get one inquiry's full record.
+         */
         get: operations["get_inquiry_admin_inquiries__inquiry_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Inquiry */
+        /**
+         * Update Inquiry
+         * @description Update only the fields sent in the body. An inquiry must keep an email or phone.
+         */
         patch: operations["update_inquiry_admin_inquiries__inquiry_id__patch"];
+        trace?: never;
+    };
+    "/admin/inquiries/{inquiry_id}/activities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Activities
+         * @description List an inquiry's activities, most recent first.
+         */
+        get: operations["list_activities_admin_inquiries__inquiry_id__activities_get"];
+        put?: never;
+        /**
+         * Create Activity
+         * @description Log a contact attempt on an inquiry. occurred_at defaults to now.
+         */
+        post: operations["create_activity_admin_inquiries__inquiry_id__activities_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/health": {
@@ -77,10 +113,64 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * ActivityChannel
+         * @enum {string}
+         */
+        ActivityChannel: "phone" | "email" | "text" | "in_person" | "other";
+        /**
+         * ActivityOutcome
+         * @enum {string}
+         */
+        ActivityOutcome: "reached" | "left_message" | "no_response" | "wrong_contact";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * InquiryActivityCreate
+         * @description Logged by staff. The author comes from the signed-in user, not the body.
+         */
+        InquiryActivityCreate: {
+            channel: components["schemas"]["ActivityChannel"];
+            outcome: components["schemas"]["ActivityOutcome"];
+            /** Occurred At */
+            occurred_at?: string | null;
+            /** Summary */
+            summary?: string | null;
+        };
+        /**
+         * InquiryActivityRead
+         * @description Full record, for staff only.
+         */
+        InquiryActivityRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Inquiry Id
+             * Format: uuid
+             */
+            inquiry_id: string;
+            /** Staff Id */
+            staff_id: string;
+            channel: components["schemas"]["ActivityChannel"];
+            outcome: components["schemas"]["ActivityOutcome"];
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /** Summary */
+            summary: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /**
          * InquiryConfirmation
@@ -172,6 +262,17 @@ export interface components {
             contact_phone?: string | null;
             /** Zip Code */
             zip_code?: string | null;
+        };
+        /** Page[InquiryActivityRead] */
+        Page_InquiryActivityRead_: {
+            /** Items */
+            items: components["schemas"]["InquiryActivityRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
         };
         /** Page[InquiryRead] */
         Page_InquiryRead_: {
@@ -328,6 +429,75 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InquiryRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_activities_admin_inquiries__inquiry_id__activities_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_InquiryActivityRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_activity_admin_inquiries__inquiry_id__activities_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InquiryActivityCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InquiryActivityRead"];
                 };
             };
             /** @description Validation Error */
