@@ -4,18 +4,32 @@
  */
 
 export interface paths {
-    "/programs": {
+    "/inquiries": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Programs
-         * @description List active programs, optionally filtered by role and region.
-         */
-        get: operations["list_programs_programs_get"];
+        get?: never;
+        put?: never;
+        /** Create Inquiry */
+        post: operations["create_inquiry_inquiries_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/inquiries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Inquiries */
+        get: operations["list_inquiries_admin_inquiries_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -24,52 +38,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/admin/programs": {
+    "/admin/inquiries/{inquiry_id}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /**
-         * List Admin Programs
-         * @description List programs with filters and pagination.
-         */
-        get: operations["list_admin_programs_admin_programs_get"];
-        put?: never;
-        /**
-         * Create Program
-         * @description Create a program. Names must be unique.
-         */
-        post: operations["create_program_admin_programs_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/admin/programs/{program_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Program
-         * @description Get one program, including internal contact details.
-         */
-        get: operations["get_program_admin_programs__program_id__get"];
+        /** Get Inquiry */
+        get: operations["get_inquiry_admin_inquiries__inquiry_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /**
-         * Update Program
-         * @description Update provided fields. Programs are deactivated, not deleted.
-         */
-        patch: operations["update_program_admin_programs__program_id__patch"];
+        /** Update Inquiry */
+        patch: operations["update_inquiry_admin_inquiries__inquiry_id__patch"];
         trace?: never;
     };
     "/health": {
@@ -99,43 +83,60 @@ export interface components {
             detail?: components["schemas"]["ValidationError"][];
         };
         /**
-         * InquiryRole
-         * @enum {string}
+         * InquiryConfirmation
+         * @description Returned to the public submitter: a reference, never the submitted details.
          */
-        InquiryRole: "athlete" | "volunteer" | "partner" | "donor";
-        /** Page[ProgramAdmin] */
-        Page_ProgramAdmin_: {
-            /** Items */
-            items: components["schemas"]["ProgramAdmin"][];
-            /** Total */
-            total: number;
-            /** Page */
-            page: number;
-            /** Page Size */
-            page_size: number;
-        };
-        /** ProgramAdmin */
-        ProgramAdmin: {
-            /** Name */
-            name: string;
-            /** Description */
-            description?: string | null;
-            /** Audiences */
-            audiences?: components["schemas"]["InquiryRole"][];
-            /** Regions */
-            regions?: components["schemas"]["Region"][];
-            /** Contact Email */
-            contact_email?: string | null;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
+        InquiryConfirmation: {
             /**
              * Id
              * Format: uuid
              */
             id: string;
+            status: components["schemas"]["InquiryStatus"];
+        };
+        /** InquiryCreate */
+        InquiryCreate: {
+            role: components["schemas"]["InquiryRole"];
+            /** Contact Name */
+            contact_name: string;
+            /** Contact Email */
+            contact_email?: string | null;
+            /** Contact Phone */
+            contact_phone?: string | null;
+            /** Zip Code */
+            zip_code: string;
+            /**
+             * Answers
+             * @default {}
+             */
+            answers: {
+                [key: string]: unknown;
+            };
+        };
+        /**
+         * InquiryRead
+         * @description Full record, for staff only.
+         */
+        InquiryRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            role: components["schemas"]["InquiryRole"];
+            status: components["schemas"]["InquiryStatus"];
+            /** Contact Name */
+            contact_name: string;
+            /** Contact Email */
+            contact_email: string | null;
+            /** Contact Phone */
+            contact_phone: string | null;
+            /** Zip Code */
+            zip_code: string;
+            /** Answers */
+            answers: {
+                [key: string]: unknown;
+            };
             /**
              * Created At
              * Format: date-time
@@ -147,62 +148,42 @@ export interface components {
              */
             updated_at: string;
         };
-        /** ProgramCreate */
-        ProgramCreate: {
-            /** Name */
-            name: string;
-            /** Description */
-            description?: string | null;
-            /** Audiences */
-            audiences?: components["schemas"]["InquiryRole"][];
-            /** Regions */
-            regions?: components["schemas"]["Region"][];
-            /** Contact Email */
-            contact_email?: string | null;
-            /**
-             * Is Active
-             * @default true
-             */
-            is_active: boolean;
-        };
-        /** ProgramPublic */
-        ProgramPublic: {
-            /**
-             * Id
-             * Format: uuid
-             */
-            id: string;
-            /** Name */
-            name: string;
-            /** Description */
-            description: string | null;
-            /** Audiences */
-            audiences: components["schemas"]["InquiryRole"][];
-            /** Regions */
-            regions: components["schemas"]["Region"][];
-            /** Is Active */
-            is_active: boolean;
-        };
-        /** ProgramUpdate */
-        ProgramUpdate: {
-            /** Name */
-            name?: string | null;
-            /** Description */
-            description?: string | null;
-            /** Audiences */
-            audiences?: components["schemas"]["InquiryRole"][] | null;
-            /** Regions */
-            regions?: components["schemas"]["Region"][] | null;
-            /** Contact Email */
-            contact_email?: string | null;
-            /** Is Active */
-            is_active?: boolean | null;
-        };
         /**
-         * Region
+         * InquiryRole
          * @enum {string}
          */
-        Region: "east" | "middle" | "west";
+        InquiryRole: "athlete" | "volunteer" | "partner" | "donor";
+        /**
+         * InquiryStatus
+         * @enum {string}
+         */
+        InquiryStatus: "new" | "needs_review" | "assigned" | "contacted" | "referred" | "closed";
+        /**
+         * InquiryUpdate
+         * @description Partial update: only fields present in the request body are changed.
+         */
+        InquiryUpdate: {
+            status?: components["schemas"]["InquiryStatus"] | null;
+            /** Contact Name */
+            contact_name?: string | null;
+            /** Contact Email */
+            contact_email?: string | null;
+            /** Contact Phone */
+            contact_phone?: string | null;
+            /** Zip Code */
+            zip_code?: string | null;
+        };
+        /** Page[InquiryRead] */
+        Page_InquiryRead_: {
+            /** Items */
+            items: components["schemas"]["InquiryRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -225,25 +206,26 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    list_programs_programs_get: {
+    create_inquiry_inquiries_post: {
         parameters: {
-            query?: {
-                role?: components["schemas"]["InquiryRole"] | null;
-                region?: components["schemas"]["Region"] | null;
-            };
+            query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InquiryCreate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
-            200: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProgramPublic"][];
+                    "application/json": components["schemas"]["InquiryConfirmation"];
                 };
             };
             /** @description Validation Error */
@@ -257,13 +239,12 @@ export interface operations {
             };
         };
     };
-    list_admin_programs_admin_programs_get: {
+    list_inquiries_admin_inquiries_get: {
         parameters: {
             query?: {
-                is_active?: boolean | null;
+                status?: components["schemas"]["InquiryStatus"] | null;
                 role?: components["schemas"]["InquiryRole"] | null;
-                region?: components["schemas"]["Region"] | null;
-                /** @description Search program name */
+                /** @description Search name or email */
                 q?: string | null;
                 page?: number;
                 page_size?: number;
@@ -280,7 +261,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Page_ProgramAdmin_"];
+                    "application/json": components["schemas"]["Page_InquiryRead_"];
                 };
             };
             /** @description Validation Error */
@@ -294,45 +275,12 @@ export interface operations {
             };
         };
     };
-    create_program_admin_programs_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ProgramCreate"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ProgramAdmin"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_program_admin_programs__program_id__get: {
+    get_inquiry_admin_inquiries__inquiry_id__get: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                program_id: string;
+                inquiry_id: string;
             };
             cookie?: never;
         };
@@ -344,7 +292,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProgramAdmin"];
+                    "application/json": components["schemas"]["InquiryRead"];
                 };
             };
             /** @description Validation Error */
@@ -358,18 +306,18 @@ export interface operations {
             };
         };
     };
-    update_program_admin_programs__program_id__patch: {
+    update_inquiry_admin_inquiries__inquiry_id__patch: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                program_id: string;
+                inquiry_id: string;
             };
             cookie?: never;
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["ProgramUpdate"];
+                "application/json": components["schemas"]["InquiryUpdate"];
             };
         };
         responses: {
@@ -379,7 +327,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ProgramAdmin"];
+                    "application/json": components["schemas"]["InquiryRead"];
                 };
             };
             /** @description Validation Error */
