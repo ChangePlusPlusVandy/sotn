@@ -1,6 +1,6 @@
 import uuid
 from datetime import UTC, datetime
-from typing import Annotated, Literal
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import Date, cast, func, select
@@ -11,7 +11,7 @@ from app.models.follow_up import FollowUp, FollowUpStatus
 from app.models.inquiry import Inquiry
 from app.routers.inquiries import get_inquiry_or_404
 from app.schemas.common import Page
-from app.schemas.follow_up import FollowUpCreate, FollowUpRead, FollowUpUpdate
+from app.schemas.follow_up import FollowUpCreate, FollowUpRead, FollowUpUpdate, StaffId
 
 # Decides what "today" is for overdue checks.
 STAFF_TIMEZONE = "America/Chicago"
@@ -57,7 +57,7 @@ def create_follow_up(
 
 
 # GET /admin/follow-ups:
-# filters status, inquiry_id, assignee (me = current staff), overdue=true;
+# filters status, inquiry_id, assignee (a staff ID, or me = current staff), overdue=true;
 # sorted by due_on, soonest first
 @admin_router.get("", response_model=Page[FollowUpRead])
 def list_follow_ups(
@@ -66,7 +66,8 @@ def list_follow_ups(
     status: FollowUpStatus | None = None,
     inquiry_id: uuid.UUID | None = None,
     assignee: Annotated[
-        Literal["me"] | None, Query(description="'me' for the current staff member")
+        StaffId | None,
+        Query(description="A staff ID, or 'me' for the current staff member"),
     ] = None,
     overdue: Annotated[
         bool,
@@ -81,8 +82,10 @@ def list_follow_ups(
         query = query.where(FollowUp.status == status)
     if inquiry_id:
         query = query.where(FollowUp.inquiry_id == inquiry_id)
-    if assignee == "me":
-        query = query.where(FollowUp.assignee_staff_id == staff_id)
+    if assignee:
+        query = query.where(
+            FollowUp.assignee_staff_id == (staff_id if assignee == "me" else assignee)
+        )
     if overdue:
         # A follow-up due today isn't overdue until that day has ended.
         today = cast(func.timezone(STAFF_TIMEZONE, func.now()), Date)

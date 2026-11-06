@@ -182,6 +182,18 @@ def test_list_follow_ups_filters(staff_client, db):
     res = staff_client.get("/admin/follow-ups", params={"assignee": "me"})
     assert {f["title"] for f in res.json()["items"]} == {"Mine", "Started"}
 
+    res = staff_client.get("/admin/follow-ups", params={"assignee": "user_other_staff"})
+    assert [f["title"] for f in res.json()["items"]] == ["Theirs"]
+
+    res = staff_client.get("/admin/follow-ups", params={"assignee": "user_unknown"})
+    assert res.json()["total"] == 0
+
+
+@pytest.mark.parametrize("assignee", ["", "user\x00other", "u" * 65])
+def test_list_follow_ups_rejects_invalid_assignee(staff_client, assignee):
+    res = staff_client.get("/admin/follow-ups", params={"assignee": assignee})
+    assert res.status_code == 422
+
 
 def test_list_follow_ups_overdue_excludes_complete_and_not_yet_ended(staff_client, db):
     inquiry = add_inquiry(db)
