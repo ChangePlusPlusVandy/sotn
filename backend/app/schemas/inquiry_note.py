@@ -1,7 +1,10 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, StringConstraints
+
+from app.schemas.resource import reject_nul
 
 
 class InquiryNoteCreate(BaseModel):
@@ -9,7 +12,11 @@ class InquiryNoteCreate(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    body: str = Field(min_length=1)
+    body: Annotated[
+        str,
+        StringConstraints(strip_whitespace=True, min_length=1, max_length=5000),
+        AfterValidator(reject_nul),
+    ]
 
 
 class InquiryNoteRead(BaseModel):
