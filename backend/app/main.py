@@ -5,12 +5,12 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.db import DbSession
 from app.routers import (
+    follow_ups,
     inquiries,
     inquiry_activities,
     inquiry_notes,
     programs,
     resources,
-    follow_ups
 )
 
 app = FastAPI(title="SOTN Intake API")
