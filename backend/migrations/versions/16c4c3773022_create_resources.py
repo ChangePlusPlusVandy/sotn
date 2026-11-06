@@ -1,7 +1,7 @@
 """create resources
 
 Revision ID: 16c4c3773022
-Revises: b219bcce34b0
+Revises: 3a7dc1bfdec6
 Create Date: 2026-10-18 16:42:50.536504
 
 """
@@ -13,7 +13,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = '16c4c3773022'
-down_revision: Union[str, Sequence[str], None] = 'b219bcce34b0'
+down_revision: Union[str, Sequence[str], None] = '3a7dc1bfdec6'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

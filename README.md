@@ -1,6 +1,7 @@
 # SOTN - Special Olympics Tennessee Intake & Routing Platform
 
 ## Project Overview
+
 Repo for SOTN, a recruitment, intake and routing platform with:
 
 **backend/** : FastAPI REST API (Python, PostgreSQL)  
@@ -109,6 +110,7 @@ No tables? Run `uv run alembic upgrade head` in `backend/`.
 Backend uses FastAPI, SQLAlchemy, Alembic, PostgreSQL, and Clerk auth. Frontend uses Next.js, Clerk, Tailwind, and shadcn/ui. Staff sign in with Clerk; public visitors never need an account. Any signed-in Clerk user counts as staff for now, so keep Clerk sign-ups set to invitation only.
 
 Before each push, run these for code consistency for all devs. CI runs the same checks on every pull request.
+
 ```bash
 cd backend
 uv run ruff format .
@@ -119,9 +121,11 @@ cd ../frontend
 npm run lint
 npm run typecheck
 ```
+
 After changing backend endpoints, run `npm run api:types` in `frontend/` (with the backend running) to update the generated types.
 
 **Documentation Links For Reference:**
+
 - [FastAPI Docs](https://fastapi.tiangolo.com/)
 - [SQLAlchemy Docs](https://docs.sqlalchemy.org/en/20/)
 - [Alembic Docs](https://alembic.sqlalchemy.org/)
@@ -133,3 +137,4 @@ After changing backend endpoints, run `npm run api:types` in `frontend/` (with t
 - [shadcn/ui Docs](https://ui.shadcn.com/docs)
 - [Tailwind CSS Docs](https://tailwindcss.com/docs)
 - [Docker Desktop Docs](https://docs.docker.com/desktop/)
+  -test
