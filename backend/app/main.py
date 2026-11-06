@@ -5,6 +5,7 @@ from sqlalchemy import text
 from app.core.config import settings
 from app.core.db import DbSession
 from app.routers import (
+    follow_ups,
     inquiries,
     inquiry_activities,
     inquiry_notes,
@@ -22,6 +23,8 @@ app.add_middleware(
 
 app.include_router(inquiries.router)
 app.include_router(inquiries.admin_router)
+app.include_router(follow_ups.inquiry_router)
+app.include_router(follow_ups.admin_router)
 app.include_router(inquiry_activities.router)
 app.include_router(inquiry_notes.admin_router)
 app.include_router(resources.router)
