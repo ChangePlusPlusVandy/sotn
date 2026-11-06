@@ -1,18 +1,30 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ConfigDict,
+    StringConstraints,
+    field_validator,
+)
 
 from app.models.follow_up import FollowUpStatus
+from app.schemas.resource import Description, Title, reject_nul
+
+StaffId = Annotated[
+    str, StringConstraints(min_length=1, max_length=64), AfterValidator(reject_nul)
+]
 
 
 class FollowUpCreate(BaseModel):
     """created_by_staff_id is set by the server; assignee defaults to the current staff member."""
 
-    title: str = Field(min_length=1, max_length=200)
-    details: str | None = None
-    due_at: datetime
-    assignee_staff_id: str | None = Field(default=None, min_length=1, max_length=64)
+    title: Title
+    details: Description | None = None
+    due_on: date
+    assignee_staff_id: StaffId | None = None
 
 
 class FollowUpRead(BaseModel):
@@ -24,7 +36,7 @@ class FollowUpRead(BaseModel):
     details: str | None
     created_by_staff_id: str
     assignee_staff_id: str
-    due_at: datetime
+    due_on: date
     status: FollowUpStatus
     completed_at: datetime | None
     created_at: datetime
@@ -34,13 +46,13 @@ class FollowUpRead(BaseModel):
 class FollowUpUpdate(BaseModel):
     """Partial update: only fields present in the request body are changed."""
 
-    title: str | None = Field(default=None, min_length=1, max_length=200)
-    details: str | None = None
-    due_at: datetime | None = None
-    assignee_staff_id: str | None = Field(default=None, min_length=1, max_length=64)
+    title: Title | None = None
+    details: Description | None = None
+    due_on: date | None = None
+    assignee_staff_id: StaffId | None = None
     status: FollowUpStatus | None = None
 
-    @field_validator("title", "due_at", "assignee_staff_id", "status")
+    @field_validator("title", "due_on", "assignee_staff_id", "status")
     @classmethod
     def not_null(cls, value):
         # Omitting these fields is fine; explicitly sending null is not.

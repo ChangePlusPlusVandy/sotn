@@ -28,7 +28,7 @@ def upgrade() -> None:
     sa.Column('details', sa.Text(), nullable=True),
     sa.Column('created_by_staff_id', sa.String(length=64), nullable=False),
     sa.Column('assignee_staff_id', sa.String(length=64), nullable=False),
-    sa.Column('due_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('due_on', sa.Date(), nullable=False),
     sa.Column('status', sa.Enum('not_started', 'in_progress', 'complete', name='followupstatus', native_enum=False, length=32), nullable=False),
     sa.Column('completed_at', sa.DateTime(timezone=True), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),

@@ -1,8 +1,8 @@
 import enum
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import Date, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, str_enum
@@ -25,7 +25,7 @@ class FollowUp(Base):
     details: Mapped[str | None] = mapped_column(Text)
     created_by_staff_id: Mapped[str] = mapped_column(String(64))
     assignee_staff_id: Mapped[str] = mapped_column(String(64))
-    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    due_on: Mapped[date] = mapped_column(Date)
     status: Mapped[FollowUpStatus] = mapped_column(
         str_enum(FollowUpStatus), default=FollowUpStatus.NOT_STARTED
     )

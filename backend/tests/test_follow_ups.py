@@ -1,10 +1,18 @@
-from datetime import UTC, datetime, timedelta
+from datetime import date, timedelta
+
+import pytest
+from sqlalchemy import Date, cast, func, select
 
 from app.models.follow_up import FollowUp, FollowUpStatus
 from app.models.inquiry import Inquiry
+from app.routers import follow_ups
 from tests.conftest import TEST_STAFF_ID
 
 MISSING_ID = "00000000-0000-0000-0000-000000000000"
+
+
+def today_in(db, timezone: str) -> date:
+    return db.scalar(select(cast(func.timezone(timezone, func.now()), Date)))
 
 
 def add_inquiry(db) -> Inquiry:
@@ -25,7 +33,7 @@ def add_follow_up(db, inquiry, **overrides) -> FollowUp:
         "title": "Call back",
         "created_by_staff_id": TEST_STAFF_ID,
         "assignee_staff_id": TEST_STAFF_ID,
-        "due_at": datetime.now(UTC) + timedelta(days=7),
+        "due_on": today_in(db, "America/Chicago") + timedelta(days=7),
         **overrides,
     }
     follow_up = FollowUp(**fields)
@@ -42,7 +50,7 @@ def test_create_follow_up(staff_client, db):
         json={
             "title": "Call back",
             "details": "Ask about tennis",
-            "due_at": "2026-11-07T17:00:00Z",
+            "due_on": "2026-11-07",
             "assignee_staff_id": "user_other_staff",
         },
     )
@@ -51,6 +59,7 @@ def test_create_follow_up(staff_client, db):
     body = res.json()
     assert body["inquiry_id"] == str(inquiry.id)
     assert body["title"] == "Call back"
+    assert body["due_on"] == "2026-11-07"
     assert body["status"] == "not_started"
     assert body["completed_at"] is None
     assert body["created_by_staff_id"] == TEST_STAFF_ID
@@ -65,7 +74,7 @@ def test_create_follow_up_assigns_current_staff_by_default(staff_client, db):
 
     res = staff_client.post(
         f"/admin/inquiries/{inquiry.id}/follow-ups",
-        json={"title": "Call back", "due_at": "2026-11-07T17:00:00Z"},
+        json={"title": "Call back", "due_on": "2026-11-07"},
     )
 
     assert res.status_code == 201
@@ -75,7 +84,7 @@ def test_create_follow_up_assigns_current_staff_by_default(staff_client, db):
 def test_create_follow_up_404_for_missing_inquiry(staff_client):
     res = staff_client.post(
         f"/admin/inquiries/{MISSING_ID}/follow-ups",
-        json={"title": "Call back", "due_at": "2026-11-07T17:00:00Z"},
+        json={"title": "Call back", "due_on": "2026-11-07"},
     )
     assert res.status_code == 404
 
@@ -86,11 +95,39 @@ def test_create_follow_up_validates_body(staff_client, db):
 
     assert staff_client.post(url, json={"title": "Call back"}).status_code == 422
     assert (
-        staff_client.post(
-            url, json={"title": "", "due_at": "2026-11-07T17:00:00Z"}
-        ).status_code
+        staff_client.post(url, json={"title": "", "due_on": "2026-11-07"}).status_code
         == 422
     )
+
+
+def test_create_follow_up_rejects_a_time_of_day(staff_client, db):
+    res = staff_client.post(
+        f"/admin/inquiries/{add_inquiry(db).id}/follow-ups",
+        json={"title": "Call back", "due_on": "2026-11-07T17:00:00Z"},
+    )
+    assert res.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "fields",
+    [
+        {"title": "Call\x00back"},
+        {"details": "Ask\x00about tennis"},
+        {"assignee_staff_id": "user\x00other"},
+    ],
+)
+def test_follow_up_text_rejects_nul_characters(staff_client, db, fields):
+    inquiry = add_inquiry(db)
+    follow_up = add_follow_up(db, inquiry)
+
+    created = staff_client.post(
+        f"/admin/inquiries/{inquiry.id}/follow-ups",
+        json={"title": "Call back", "due_on": "2026-11-07", **fields},
+    )
+    updated = staff_client.patch(f"/admin/follow-ups/{follow_up.id}", json=fields)
+
+    assert created.status_code == 422
+    assert updated.status_code == 422
 
 
 def test_follow_up_routes_require_auth(client, db):
@@ -108,15 +145,25 @@ def test_follow_up_routes_require_auth(client, db):
 
 def test_list_follow_ups_sorted_by_due_date(staff_client, db):
     inquiry = add_inquiry(db)
-    now = datetime.now(UTC)
-    add_follow_up(db, inquiry, title="Later", due_at=now + timedelta(days=3))
-    add_follow_up(db, inquiry, title="Soonest", due_at=now + timedelta(days=1))
-    add_follow_up(db, inquiry, title="Middle", due_at=now + timedelta(days=2))
+    today = today_in(db, "America/Chicago")
+    add_follow_up(db, inquiry, title="Later", due_on=today + timedelta(days=3))
+    add_follow_up(db, inquiry, title="Soonest", due_on=today + timedelta(days=1))
+    add_follow_up(db, inquiry, title="Middle", due_on=today + timedelta(days=2))
 
     res = staff_client.get("/admin/follow-ups")
 
     assert res.status_code == 200
     assert [f["title"] for f in res.json()["items"]] == ["Soonest", "Middle", "Later"]
+
+
+def test_list_follow_ups_with_same_due_date_have_a_fixed_order(staff_client, db):
+    inquiry = add_inquiry(db)
+    # Rows in one test transaction share a created_at, so id decides the order.
+    ids = {str(add_follow_up(db, inquiry).id) for _ in range(5)}
+
+    res = staff_client.get("/admin/follow-ups")
+
+    assert [f["id"] for f in res.json()["items"]] == sorted(ids)
 
 
 def test_list_follow_ups_filters(staff_client, db):
@@ -136,16 +183,32 @@ def test_list_follow_ups_filters(staff_client, db):
     assert {f["title"] for f in res.json()["items"]} == {"Mine", "Started"}
 
 
-def test_list_follow_ups_overdue_excludes_complete_and_future(staff_client, db):
+def test_list_follow_ups_overdue_excludes_complete_and_not_yet_ended(staff_client, db):
     inquiry = add_inquiry(db)
-    yesterday = datetime.now(UTC) - timedelta(days=1)
-    add_follow_up(db, inquiry, title="Overdue", due_at=yesterday)
-    add_follow_up(db, inquiry, title="Done", due_at=yesterday, status="complete")
-    add_follow_up(db, inquiry, title="Upcoming")
+    today = today_in(db, "America/Chicago")
+    yesterday = today - timedelta(days=1)
+    add_follow_up(db, inquiry, title="Overdue", due_on=yesterday)
+    add_follow_up(db, inquiry, title="Done", due_on=yesterday, status="complete")
+    add_follow_up(db, inquiry, title="Due today", due_on=today)
+    add_follow_up(db, inquiry, title="Upcoming", due_on=today + timedelta(days=1))
 
     res = staff_client.get("/admin/follow-ups", params={"overdue": "true"})
 
     assert [f["title"] for f in res.json()["items"]] == ["Overdue"]
+
+
+def test_overdue_uses_the_staff_timezone_for_today(staff_client, db, monkeypatch):
+    # These zones are 26 hours apart, so they never share a date, whatever time this runs.
+    behind, ahead = "Etc/GMT+12", "Pacific/Kiritimati"
+    add_follow_up(db, add_inquiry(db), due_on=today_in(db, behind))
+
+    monkeypatch.setattr(follow_ups, "STAFF_TIMEZONE", behind)
+    res = staff_client.get("/admin/follow-ups", params={"overdue": "true"})
+    assert res.json()["total"] == 0
+
+    monkeypatch.setattr(follow_ups, "STAFF_TIMEZONE", ahead)
+    res = staff_client.get("/admin/follow-ups", params={"overdue": "true"})
+    assert res.json()["total"] == 1
 
 
 def test_list_follow_ups_paginates(staff_client, db):
@@ -186,6 +249,17 @@ def test_update_follow_up_changes_only_sent_fields(staff_client, db):
     assert res.status_code == 200
     assert res.json()["title"] == "Email instead"
     assert res.json()["details"] == "Ask about tennis"
+
+
+def test_update_follow_up_changes_due_date(staff_client, db):
+    follow_up = add_follow_up(db, add_inquiry(db))
+
+    res = staff_client.patch(
+        f"/admin/follow-ups/{follow_up.id}", json={"due_on": "2026-12-01"}
+    )
+
+    assert res.status_code == 200
+    assert res.json()["due_on"] == "2026-12-01"
 
 
 def test_update_follow_up_rejects_null_required_field(staff_client, db):

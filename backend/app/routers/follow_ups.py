@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import Date, cast, func, select
 
 from app.core.auth import CurrentStaff, get_current_staff
 from app.core.db import DbSession
@@ -12,6 +12,9 @@ from app.models.inquiry import Inquiry
 from app.routers.inquiries import get_inquiry_or_404
 from app.schemas.common import Page
 from app.schemas.follow_up import FollowUpCreate, FollowUpRead, FollowUpUpdate
+
+# Decides what "today" is for overdue checks.
+STAFF_TIMEZONE = "America/Chicago"
 
 # Follow-ups are created under an inquiry...
 inquiry_router = APIRouter(
@@ -55,7 +58,7 @@ def create_follow_up(
 
 # GET /admin/follow-ups:
 # filters status, inquiry_id, assignee (me = current staff), overdue=true;
-# sorted by due_at, soonest first
+# sorted by due_on, soonest first
 @admin_router.get("", response_model=Page[FollowUpRead])
 def list_follow_ups(
     db: DbSession,
@@ -66,7 +69,8 @@ def list_follow_ups(
         Literal["me"] | None, Query(description="'me' for the current staff member")
     ] = None,
     overdue: Annotated[
-        bool, Query(description="Only incomplete follow-ups past their due date")
+        bool,
+        Query(description="Only incomplete follow-ups whose due date has ended"),
     ] = False,
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 25,
@@ -80,13 +84,18 @@ def list_follow_ups(
     if assignee == "me":
         query = query.where(FollowUp.assignee_staff_id == staff_id)
     if overdue:
+        # A follow-up due today isn't overdue until that day has ended.
+        today = cast(func.timezone(STAFF_TIMEZONE, func.now()), Date)
         query = query.where(
-            FollowUp.due_at < func.now(), FollowUp.status != FollowUpStatus.COMPLETE
+            FollowUp.due_on < today, FollowUp.status != FollowUpStatus.COMPLETE
         )
     # Counting all matching rows before pagination
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     items = db.scalars(
-        query.order_by(FollowUp.due_at.asc())
+        # Many follow-ups share a due date; the tie-breakers keep pages from overlapping.
+        query.order_by(
+            FollowUp.due_on.asc(), FollowUp.created_at.asc(), FollowUp.id.asc()
+        )
         .offset((page - 1) * page_size)
         .limit(page_size)
     ).all()
@@ -109,7 +118,7 @@ def get_follow_up(follow_up: Annotated[FollowUp, Depends(get_follow_up_or_404)])
 
 
 # PATCH /admin/follow-ups/{id}:
-# can change title, details, due_at, assignee_staff_id, status
+# can change title, details, due_on, assignee_staff_id, status
 @admin_router.patch("/{follow_up_id}", response_model=FollowUpRead)
 def update_follow_up(
     body: FollowUpUpdate,
