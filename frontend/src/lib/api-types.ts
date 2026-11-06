@@ -13,7 +13,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create Inquiry */
+        /**
+         * Create Inquiry
+         * @description Submit the public intake form. Returns only a reference, never the submitted details.
+         */
         post: operations["create_inquiry_inquiries_post"];
         delete?: never;
         options?: never;
@@ -28,7 +31,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List Inquiries */
+        /**
+         * List Inquiries
+         * @description List inquiries, newest first, with optional filters and search.
+         */
         get: operations["list_inquiries_admin_inquiries_get"];
         put?: never;
         post?: never;
@@ -45,15 +51,267 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get Inquiry */
+        /**
+         * Get Inquiry
+         * @description Get one inquiry's full record.
+         */
         get: operations["get_inquiry_admin_inquiries__inquiry_id__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
-        /** Update Inquiry */
+        /**
+         * Update Inquiry
+         * @description Update only the fields sent in the body. An inquiry must keep an email or phone.
+         */
         patch: operations["update_inquiry_admin_inquiries__inquiry_id__patch"];
+        trace?: never;
+    };
+    "/admin/inquiries/{inquiry_id}/follow-ups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Follow Up
+         * @description Create a follow-up on an inquiry. The assignee defaults to the current staff member.
+         */
+        post: operations["create_follow_up_admin_inquiries__inquiry_id__follow_ups_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/follow-ups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Follow Ups
+         * @description List follow-ups across all inquiries, soonest due first, with optional filters.
+         */
+        get: operations["list_follow_ups_admin_follow_ups_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/follow-ups/{follow_up_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Follow Up
+         * @description Get one follow-up.
+         */
+        get: operations["get_follow_up_admin_follow_ups__follow_up_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Follow Up
+         * @description Update only the fields sent in the body. completed_at is set and cleared by the server.
+         */
+        patch: operations["update_follow_up_admin_follow_ups__follow_up_id__patch"];
+        trace?: never;
+    };
+    "/admin/inquiries/{inquiry_id}/activities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Activities
+         * @description List an inquiry's activities, most recent first.
+         */
+        get: operations["list_activities_admin_inquiries__inquiry_id__activities_get"];
+        put?: never;
+        /**
+         * Create Activity
+         * @description Log a contact attempt on an inquiry. occurred_at defaults to now.
+         */
+        post: operations["create_activity_admin_inquiries__inquiry_id__activities_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/inquiries/{inquiry_id}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Notes */
+        get: operations["list_notes_admin_inquiries__inquiry_id__notes_get"];
+        put?: never;
+        /** Create Note */
+        post: operations["create_note_admin_inquiries__inquiry_id__notes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Published Resources
+         * @description List published resources for the public results page, optionally for one role.
+         */
+        get: operations["list_published_resources_resources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Resources
+         * @description List all resources, published or not, newest first, with optional filters and search.
+         */
+        get: operations["list_resources_admin_resources_get"];
+        put?: never;
+        /**
+         * Create Resource
+         * @description Create a resource. New resources are unpublished unless is_published is sent.
+         */
+        post: operations["create_resource_admin_resources_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/resources/{resource_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Resource
+         * @description Get one resource.
+         */
+        get: operations["get_resource_admin_resources__resource_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Resource
+         * @description Permanently delete a resource. Resources hold no personal data, so this is a hard delete.
+         */
+        delete: operations["delete_resource_admin_resources__resource_id__delete"];
+        options?: never;
+        head?: never;
+        /**
+         * Update Resource
+         * @description Update only the fields sent in the body.
+         */
+        patch: operations["update_resource_admin_resources__resource_id__patch"];
+        trace?: never;
+    };
+    "/programs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Programs
+         * @description List active programs, optionally filtered by role and region.
+         */
+        get: operations["list_programs_programs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/programs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Admin Programs
+         * @description List programs with filters and pagination.
+         */
+        get: operations["list_admin_programs_admin_programs_get"];
+        put?: never;
+        /**
+         * Create Program
+         * @description Create a program. Names must be unique.
+         */
+        post: operations["create_program_admin_programs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/programs/{program_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Program
+         * @description Get one program, including internal contact details.
+         */
+        get: operations["get_program_admin_programs__program_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Update Program
+         * @description Update provided fields. Programs are deactivated, not deleted.
+         */
+        patch: operations["update_program_admin_programs__program_id__patch"];
         trace?: never;
     };
     "/health": {
@@ -77,10 +335,140 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * ActivityChannel
+         * @enum {string}
+         */
+        ActivityChannel: "phone" | "email" | "text" | "in_person" | "other";
+        /**
+         * ActivityOutcome
+         * @enum {string}
+         */
+        ActivityOutcome: "reached" | "left_message" | "no_response" | "wrong_contact";
+        /**
+         * FollowUpCreate
+         * @description created_by_staff_id is set by the server; assignee defaults to the current staff member.
+         */
+        FollowUpCreate: {
+            /** Title */
+            title: string;
+            /** Details */
+            details?: string | null;
+            /**
+             * Due On
+             * Format: date
+             */
+            due_on: string;
+            /** Assignee Staff Id */
+            assignee_staff_id?: string | null;
+        };
+        /** FollowUpRead */
+        FollowUpRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Inquiry Id
+             * Format: uuid
+             */
+            inquiry_id: string;
+            /** Title */
+            title: string;
+            /** Details */
+            details: string | null;
+            /** Created By Staff Id */
+            created_by_staff_id: string;
+            /** Assignee Staff Id */
+            assignee_staff_id: string;
+            /**
+             * Due On
+             * Format: date
+             */
+            due_on: string;
+            status: components["schemas"]["FollowUpStatus"];
+            /** Completed At */
+            completed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * FollowUpStatus
+         * @enum {string}
+         */
+        FollowUpStatus: "not_started" | "in_progress" | "complete";
+        /**
+         * FollowUpUpdate
+         * @description Partial update: only fields present in the request body are changed.
+         */
+        FollowUpUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Details */
+            details?: string | null;
+            /** Due On */
+            due_on?: string | null;
+            /** Assignee Staff Id */
+            assignee_staff_id?: string | null;
+            status?: components["schemas"]["FollowUpStatus"] | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * InquiryActivityCreate
+         * @description Logged by staff. The author comes from the signed-in user, not the body.
+         */
+        InquiryActivityCreate: {
+            channel: components["schemas"]["ActivityChannel"];
+            outcome: components["schemas"]["ActivityOutcome"];
+            /** Occurred At */
+            occurred_at?: string | null;
+            /** Summary */
+            summary?: string | null;
+        };
+        /**
+         * InquiryActivityRead
+         * @description Full record, for staff only.
+         */
+        InquiryActivityRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Inquiry Id
+             * Format: uuid
+             */
+            inquiry_id: string;
+            /** Staff Id */
+            staff_id: string;
+            channel: components["schemas"]["ActivityChannel"];
+            outcome: components["schemas"]["ActivityOutcome"];
+            /**
+             * Occurred At
+             * Format: date-time
+             */
+            occurred_at: string;
+            /** Summary */
+            summary: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /**
          * InquiryConfirmation
@@ -112,6 +500,36 @@ export interface components {
             answers: {
                 [key: string]: unknown;
             };
+        };
+        /**
+         * InquiryNoteCreate
+         * @description Request body for a new note. Author comes from the signed-in staff member.
+         */
+        InquiryNoteCreate: {
+            /** Body */
+            body: string;
+        };
+        /** InquiryNoteRead */
+        InquiryNoteRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Inquiry Id
+             * Format: uuid
+             */
+            inquiry_id: string;
+            /** Author Staff Id */
+            author_staff_id: string;
+            /** Body */
+            body: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /**
          * InquiryRead
@@ -173,6 +591,39 @@ export interface components {
             /** Zip Code */
             zip_code?: string | null;
         };
+        /** Page[FollowUpRead] */
+        Page_FollowUpRead_: {
+            /** Items */
+            items: components["schemas"]["FollowUpRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** Page[InquiryActivityRead] */
+        Page_InquiryActivityRead_: {
+            /** Items */
+            items: components["schemas"]["InquiryActivityRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** Page[InquiryNoteRead] */
+        Page_InquiryNoteRead_: {
+            /** Items */
+            items: components["schemas"]["InquiryNoteRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
         /** Page[InquiryRead] */
         Page_InquiryRead_: {
             /** Items */
@@ -183,6 +634,185 @@ export interface components {
             page: number;
             /** Page Size */
             page_size: number;
+        };
+        /** Page[ProgramAdmin] */
+        Page_ProgramAdmin_: {
+            /** Items */
+            items: components["schemas"]["ProgramAdmin"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** Page[ResourceRead] */
+        Page_ResourceRead_: {
+            /** Items */
+            items: components["schemas"]["ResourceRead"][];
+            /** Total */
+            total: number;
+            /** Page */
+            page: number;
+            /** Page Size */
+            page_size: number;
+        };
+        /** ProgramAdmin */
+        ProgramAdmin: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Audiences */
+            audiences?: components["schemas"]["InquiryRole"][];
+            /** Regions */
+            regions?: components["schemas"]["Region"][];
+            /** Contact Email */
+            contact_email?: string | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /** ProgramCreate */
+        ProgramCreate: {
+            /** Name */
+            name: string;
+            /** Description */
+            description?: string | null;
+            /** Audiences */
+            audiences?: components["schemas"]["InquiryRole"][];
+            /** Regions */
+            regions?: components["schemas"]["Region"][];
+            /** Contact Email */
+            contact_email?: string | null;
+            /**
+             * Is Active
+             * @default true
+             */
+            is_active: boolean;
+        };
+        /** ProgramPublic */
+        ProgramPublic: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Description */
+            description: string | null;
+            /** Audiences */
+            audiences: components["schemas"]["InquiryRole"][];
+            /** Regions */
+            regions: components["schemas"]["Region"][];
+            /** Is Active */
+            is_active: boolean;
+        };
+        /** ProgramUpdate */
+        ProgramUpdate: {
+            /** Name */
+            name?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Audiences */
+            audiences?: components["schemas"]["InquiryRole"][] | null;
+            /** Regions */
+            regions?: components["schemas"]["Region"][] | null;
+            /** Contact Email */
+            contact_email?: string | null;
+            /** Is Active */
+            is_active?: boolean | null;
+        };
+        /**
+         * Region
+         * @enum {string}
+         */
+        Region: "east" | "middle" | "west";
+        /** ResourceCreate */
+        ResourceCreate: {
+            /** Title */
+            title: string;
+            /** Description */
+            description?: string | null;
+            kind: components["schemas"]["ResourceKind"];
+            /** Url */
+            url: string;
+            /** Audiences */
+            audiences: components["schemas"]["InquiryRole"][];
+            /**
+             * Is Published
+             * @default false
+             */
+            is_published: boolean;
+        };
+        /**
+         * ResourceKind
+         * @enum {string}
+         */
+        ResourceKind: "pdf" | "video" | "link";
+        /** ResourceRead */
+        ResourceRead: {
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Title */
+            title: string;
+            /** Description */
+            description: string | null;
+            kind: components["schemas"]["ResourceKind"];
+            /** Url */
+            url: string;
+            /** Audiences */
+            audiences: components["schemas"]["InquiryRole"][];
+            /** Is Published */
+            is_published: boolean;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+        };
+        /**
+         * ResourceUpdate
+         * @description Partial update: only fields present in the request body are changed.
+         */
+        ResourceUpdate: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            kind?: components["schemas"]["ResourceKind"] | null;
+            /** Url */
+            url?: string | null;
+            /** Audiences */
+            audiences?: components["schemas"]["InquiryRole"][] | null;
+            /** Is Published */
+            is_published?: boolean | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -328,6 +958,649 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InquiryRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_follow_up_admin_inquiries__inquiry_id__follow_ups_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowUpCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowUpRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_follow_ups_admin_follow_ups_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["FollowUpStatus"] | null;
+                inquiry_id?: string | null;
+                /** @description A staff ID, or 'me' for the current staff member */
+                assignee?: string | null;
+                /** @description Only incomplete follow-ups whose due date has ended */
+                overdue?: boolean;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_FollowUpRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_follow_up_admin_follow_ups__follow_up_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                follow_up_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowUpRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_follow_up_admin_follow_ups__follow_up_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                follow_up_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FollowUpUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FollowUpRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_activities_admin_inquiries__inquiry_id__activities_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_InquiryActivityRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_activity_admin_inquiries__inquiry_id__activities_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InquiryActivityCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InquiryActivityRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_notes_admin_inquiries__inquiry_id__notes_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_InquiryNoteRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_note_admin_inquiries__inquiry_id__notes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                inquiry_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InquiryNoteCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InquiryNoteRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_published_resources_resources_get: {
+        parameters: {
+            query?: {
+                /** @description Only resources for this role */
+                role?: components["schemas"]["InquiryRole"] | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ResourceRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_resources_admin_resources_get: {
+        parameters: {
+            query?: {
+                kind?: components["schemas"]["ResourceKind"] | null;
+                is_published?: boolean | null;
+                /** @description Search title or description */
+                q?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ResourceRead_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_resource_admin_resources_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResourceCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_resource_admin_resources__resource_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_resource_admin_resources__resource_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_resource_admin_resources__resource_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                resource_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResourceUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResourceRead"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_programs_programs_get: {
+        parameters: {
+            query?: {
+                role?: components["schemas"]["InquiryRole"] | null;
+                region?: components["schemas"]["Region"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgramPublic"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_admin_programs_admin_programs_get: {
+        parameters: {
+            query?: {
+                is_active?: boolean | null;
+                role?: components["schemas"]["InquiryRole"] | null;
+                region?: components["schemas"]["Region"] | null;
+                /** @description Search program name */
+                q?: string | null;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_ProgramAdmin_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_program_admin_programs_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgramCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgramAdmin"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_program_admin_programs__program_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                program_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgramAdmin"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_program_admin_programs__program_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                program_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProgramUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProgramAdmin"];
                 };
             };
             /** @description Validation Error */
