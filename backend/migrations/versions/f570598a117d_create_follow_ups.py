@@ -1,7 +1,7 @@
 """create follow_ups
 
 Revision ID: f570598a117d
-Revises: b219bcce34b0
+Revises: 6d7f42f2a2e8
 Create Date: 2026-10-31 17:10:23.630789
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'f570598a117d'
-down_revision: Union[str, Sequence[str], None] = 'b219bcce34b0'
+down_revision: Union[str, Sequence[str], None] = '6d7f42f2a2e8'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
