@@ -36,7 +36,8 @@ class InquiryActivity(Base):
 
     Attributes:
         staff_id: The signed-in staff member who logged it.
-        occurred_at: When the contact happened. Can't be in the future.
+        occurred_at: When the contact happened. Can't be in the future or
+            before the inquiry was submitted.
         created_at: When the row was saved. Can be later than occurred_at
             if staff log a touch after the fact.
     """

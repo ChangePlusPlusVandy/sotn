@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
 
 from app.core.auth import CurrentStaff, get_current_staff
@@ -30,6 +30,12 @@ def create_activity(
     inquiry: Annotated[Inquiry, Depends(get_inquiry_or_404)],
 ):
     """Log a contact attempt on an inquiry. occurred_at defaults to now."""
+
+    # Checked here, not in the schema, because it needs the inquiry.
+    if body.occurred_at and body.occurred_at < inquiry.created_at:
+        raise HTTPException(
+            422, "occurred_at cannot be before the inquiry was submitted"
+        )
 
     activity = InquiryActivity(
         inquiry_id=inquiry.id,
