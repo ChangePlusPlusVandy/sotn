@@ -28,10 +28,12 @@ admin_router = APIRouter(
 
 @router.post("", status_code=201, response_model=InquiryConfirmation)
 def create_inquiry(body: InquiryCreate, db: DbSession):
+    """Submit the public intake form. Returns only a reference, never the submitted details."""
+
     inquiry = Inquiry(**body.model_dump())
     db.add(inquiry)
     db.commit()
-    db.refresh(inquiry)
+    db.refresh(inquiry)  # reload server-set values (created_at, updated_at)
     return inquiry
 
 
@@ -44,6 +46,8 @@ def list_inquiries(
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 25,
 ):
+    """List inquiries, newest first, with optional filters and search."""
+
     query = select(Inquiry)
     if status:
         query = query.where(Inquiry.status == status)
@@ -57,6 +61,7 @@ def list_inquiries(
             )
         )
 
+    # Count all matching rows before pagination, so the client knows how many pages exist.
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     items = db.scalars(
         query.order_by(Inquiry.created_at.desc())
@@ -66,6 +71,7 @@ def list_inquiries(
     return Page(items=items, total=total, page=page, page_size=page_size)
 
 
+# helper for get_inquiry and update_inquiry
 def get_inquiry_or_404(db: DbSession, inquiry_id: uuid.UUID) -> Inquiry:
     inquiry = db.get(Inquiry, inquiry_id)
     if inquiry is None:
@@ -75,6 +81,8 @@ def get_inquiry_or_404(db: DbSession, inquiry_id: uuid.UUID) -> Inquiry:
 
 @admin_router.get("/{inquiry_id}", response_model=InquiryRead)
 def get_inquiry(inquiry: Annotated[Inquiry, Depends(get_inquiry_or_404)]):
+    """Get one inquiry's full record."""
+
     return inquiry
 
 
@@ -84,6 +92,9 @@ def update_inquiry(
     db: DbSession,
     inquiry: Annotated[Inquiry, Depends(get_inquiry_or_404)],
 ):
+    """Update only the fields sent in the body. An inquiry must keep an email or phone."""
+
+    # exclude_unset: only fields the client sent, so omitted fields stay unchanged.
     for field, value in body.model_dump(exclude_unset=True).items():
         setattr(inquiry, field, value)
     if not inquiry.contact_email and not inquiry.contact_phone:

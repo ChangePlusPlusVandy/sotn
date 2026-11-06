@@ -1,7 +1,7 @@
 """create inquiry notes
 
 Revision ID: 41d177b15235
-Revises: b219bcce34b0
+Revises: 16c4c3773022
 Create Date: 2026-10-24 21:43:52.201654
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '41d177b15235'
-down_revision: Union[str, Sequence[str], None] = 'b219bcce34b0'
+down_revision: Union[str, Sequence[str], None] = '16c4c3773022'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

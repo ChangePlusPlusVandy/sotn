@@ -42,6 +42,6 @@ tests/             pytest; each test runs in a rolled-back transaction on empty 
 - **Enums:** `StrEnum` classes with lowercase values, stored through `str_enum()` so the database holds the same values as the API.
 - **Partial updates:** `body.model_dump(exclude_unset=True)` changes only the fields the client sent.
 - **Lists:** return `Page[ReadSchema]`, and paginate with `page` and `page_size` query params.
-- **No hard deletes for people or inquiries:** the PRD requires a documented privacy workflow instead.
+- **No hard deletes for people or inquiries** 
 - **Tests:** use `client` for public requests and `staff_client` to act as a signed-in staff member. They require `alembic upgrade head` to have run against the database in `DATABASE_URL`.
 - **Migrations:** when two PRs both add migrations, the second to merge must rebase and set its `down_revision` to the other's revision. CI fails if there's more than one head.
