@@ -1,4 +1,15 @@
+import pytest
+
 from app.models.resource import Resource
+
+UNSAFE_URLS = [
+    "javascript:alert(1)",
+    "JAVASCRIPT:alert(1)",
+    "java\tscript:alert(1)",
+    "data:text/html,<script>alert(1)</script>",
+    "not a url",
+    "https://",
+]
 
 VALID = {
     "title": "Training for Life overview",
@@ -127,6 +138,26 @@ def test_create_resource_rejects_long_title(staff_client):
     assert res.status_code == 422
 
 
+def test_create_resource_requires_an_audience(staff_client):
+    empty = {**VALID, "audiences": []}
+    assert staff_client.post("/admin/resources", json=empty).status_code == 422
+    missing = {k: v for k, v in VALID.items() if k != "audiences"}
+    assert staff_client.post("/admin/resources", json=missing).status_code == 422
+
+
+@pytest.mark.parametrize("url", UNSAFE_URLS)
+def test_create_resource_rejects_unsafe_url(staff_client, url):
+    res = staff_client.post("/admin/resources", json={**VALID, "url": url})
+    assert res.status_code == 422
+
+
+def test_create_resource_accepts_http_url(staff_client):
+    res = staff_client.post(
+        "/admin/resources", json={**VALID, "url": "http://example.com"}
+    )
+    assert res.status_code == 201
+
+
 # Admin list
 
 
@@ -219,6 +250,32 @@ def test_update_resource_rejects_null_required_field(staff_client, db):
     resource = add_resource(db)
 
     res = staff_client.patch(f"/admin/resources/{resource.id}", json={"title": None})
+
+    assert res.status_code == 422
+
+
+def test_update_resource_rejects_empty_audiences(staff_client, db):
+    resource = add_resource(db, audiences=["athlete"])
+
+    res = staff_client.patch(f"/admin/resources/{resource.id}", json={"audiences": []})
+
+    assert res.status_code == 422
+    assert resource.audiences == ["athlete"]
+
+
+@pytest.mark.parametrize("url", UNSAFE_URLS)
+def test_update_resource_rejects_unsafe_url(staff_client, db, url):
+    resource = add_resource(db)
+
+    res = staff_client.patch(f"/admin/resources/{resource.id}", json={"url": url})
+
+    assert res.status_code == 422
+
+
+def test_update_resource_rejects_null_url(staff_client, db):
+    resource = add_resource(db)
+
+    res = staff_client.patch(f"/admin/resources/{resource.id}", json={"url": None})
 
     assert res.status_code == 422
 

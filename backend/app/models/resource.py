@@ -28,9 +28,7 @@ class Resource(Base):
     kind: Mapped[ResourceKind] = mapped_column(str_enum(ResourceKind))
     url: Mapped[str] = mapped_column(String(2048))
     # Which inquiry roles this resource is shown to on the public results page.
-    audiences: Mapped[list[InquiryRole]] = mapped_column(
-        ARRAY(str_enum(InquiryRole)), default=list
-    )
+    audiences: Mapped[list[InquiryRole]] = mapped_column(ARRAY(str_enum(InquiryRole)))
     is_published: Mapped[bool] = mapped_column(Boolean, default=False)
 
     created_at: Mapped[datetime] = mapped_column(
