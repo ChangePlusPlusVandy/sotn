@@ -1,7 +1,7 @@
 """create inquiry_activities
 
 Revision ID: 6d7f42f2a2e8
-Revises: b219bcce34b0
+Revises: 41d177b15235
 Create Date: 2026-11-02 14:01:45.313651
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '6d7f42f2a2e8'
-down_revision: Union[str, Sequence[str], None] = 'b219bcce34b0'
+down_revision: Union[str, Sequence[str], None] = '41d177b15235'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
