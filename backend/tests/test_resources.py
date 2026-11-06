@@ -1,6 +1,7 @@
 import pytest
 
 from app.models.resource import Resource
+from app.routers.resources import MAX_PAGE
 
 UNSAFE_URLS = [
     "javascript:alert(1)",
@@ -9,6 +10,7 @@ UNSAFE_URLS = [
     "data:text/html,<script>alert(1)</script>",
     "not a url",
     "https://",
+    "https://example.com/\x00",
 ]
 
 VALID = {
@@ -71,6 +73,20 @@ def test_public_list_hides_unpublished_even_with_role(client, db):
 def test_public_list_rejects_unknown_role(client):
     res = client.get("/resources", params={"role": "astronaut"})
     assert res.status_code == 422
+
+
+@pytest.mark.parametrize("path", ["/resources", "/admin/resources"])
+def test_list_rejects_page_over_limit(staff_client, path):
+    res = staff_client.get(path, params={"page": MAX_PAGE + 1})
+    assert res.status_code == 422
+
+
+@pytest.mark.parametrize("path", ["/resources", "/admin/resources"])
+def test_list_accepts_last_allowed_page(staff_client, path):
+    res = staff_client.get(path, params={"page": MAX_PAGE, "page_size": 100})
+
+    assert res.status_code == 200
+    assert res.json()["items"] == []
 
 
 def test_public_cannot_write(client, db):
@@ -138,6 +154,31 @@ def test_create_resource_rejects_long_title(staff_client):
     assert res.status_code == 422
 
 
+def test_create_resource_rejects_blank_title(staff_client):
+    res = staff_client.post("/admin/resources", json={**VALID, "title": "   "})
+    assert res.status_code == 422
+
+
+def test_create_resource_strips_title(staff_client):
+    res = staff_client.post("/admin/resources", json={**VALID, "title": "  Guide  "})
+
+    assert res.status_code == 201
+    assert res.json()["title"] == "Guide"
+
+
+def test_create_resource_rejects_long_description(staff_client):
+    res = staff_client.post(
+        "/admin/resources", json={**VALID, "description": "x" * 5001}
+    )
+    assert res.status_code == 422
+
+
+@pytest.mark.parametrize("field", ["title", "description"])
+def test_create_resource_rejects_nul_byte(staff_client, field):
+    res = staff_client.post("/admin/resources", json={**VALID, field: "a\x00b"})
+    assert res.status_code == 422
+
+
 def test_create_resource_requires_an_audience(staff_client):
     empty = {**VALID, "audiences": []}
     assert staff_client.post("/admin/resources", json=empty).status_code == 422
@@ -190,6 +231,23 @@ def test_admin_list_paginates(staff_client, db):
     assert body["total"] == 3
     assert body["page"] == 2
     assert len(body["items"]) == 1
+
+
+def test_admin_search_treats_wildcards_literally(staff_client, db):
+    add_resource(db, title="100% free")
+    add_resource(db, title="1000 volunteers")
+    add_resource(db, title="snake_case")
+
+    res = staff_client.get("/admin/resources", params={"q": "100%"})
+    assert [r["title"] for r in res.json()["items"]] == ["100% free"]
+
+    res = staff_client.get("/admin/resources", params={"q": "_"})
+    assert [r["title"] for r in res.json()["items"]] == ["snake_case"]
+
+
+def test_admin_search_rejects_nul_byte(staff_client):
+    res = staff_client.get("/admin/resources", params={"q": "a\x00b"})
+    assert res.status_code == 422
 
 
 # Get
@@ -250,6 +308,33 @@ def test_update_resource_rejects_null_required_field(staff_client, db):
     resource = add_resource(db)
 
     res = staff_client.patch(f"/admin/resources/{resource.id}", json={"title": None})
+
+    assert res.status_code == 422
+
+
+def test_update_resource_rejects_blank_title(staff_client, db):
+    resource = add_resource(db)
+
+    res = staff_client.patch(f"/admin/resources/{resource.id}", json={"title": "   "})
+
+    assert res.status_code == 422
+
+
+def test_update_resource_rejects_long_description(staff_client, db):
+    resource = add_resource(db)
+
+    res = staff_client.patch(
+        f"/admin/resources/{resource.id}", json={"description": "x" * 5001}
+    )
+
+    assert res.status_code == 422
+
+
+@pytest.mark.parametrize("field", ["title", "description"])
+def test_update_resource_rejects_nul_byte(staff_client, db, field):
+    resource = add_resource(db)
+
+    res = staff_client.patch(f"/admin/resources/{resource.id}", json={field: "a\x00b"})
 
     assert res.status_code == 422
 

@@ -21,6 +21,9 @@ admin_router = APIRouter(
     dependencies=[Depends(get_current_staff)],
 )
 
+# Keeps the pagination offset within Postgres's BIGINT range; larger pages return a 422.
+MAX_PAGE = 1_000_000
+
 
 def paginate(db: DbSession, query, page: int, page_size: int) -> Page[ResourceRead]:
     # Count all matching rows before pagination, so the client knows how many pages exist.
@@ -39,7 +42,7 @@ def list_published_resources(
     role: Annotated[
         InquiryRole | None, Query(description="Only resources for this role")
     ] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
+    page: Annotated[int, Query(ge=1, le=MAX_PAGE)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 25,
 ):
     """List published resources for the public results page, optionally for one role."""
@@ -55,8 +58,12 @@ def list_resources(
     db: DbSession,
     kind: ResourceKind | None = None,
     is_published: bool | None = None,
-    q: Annotated[str | None, Query(description="Search title or description")] = None,
-    page: Annotated[int, Query(ge=1)] = 1,
+    q: Annotated[
+        str | None,
+        # The pattern rejects NUL bytes, which Postgres can't accept in a query parameter.
+        Query(description="Search title or description", pattern=r"^[^\x00]*$"),
+    ] = None,
+    page: Annotated[int, Query(ge=1, le=MAX_PAGE)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 25,
 ):
     """List all resources, published or not, newest first, with optional filters and search."""
@@ -69,8 +76,8 @@ def list_resources(
     if q:
         query = query.where(
             or_(
-                Resource.title.ilike(f"%{q}%"),
-                Resource.description.ilike(f"%{q}%"),
+                Resource.title.icontains(q, autoescape=True),
+                Resource.description.icontains(q, autoescape=True),
             )
         )
     return paginate(db, query, page, page_size)

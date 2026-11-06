@@ -1,14 +1,30 @@
 import uuid
 from datetime import datetime
+from typing import Annotated
 from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    ConfigDict,
+    Field,
+    StringConstraints,
+    field_validator,
+)
 
 from app.models.inquiry import InquiryRole
 from app.models.resource import ResourceKind
 
 
+def reject_nul(value: str) -> str:
+    # Postgres text can't store NUL bytes, so they would otherwise surface as a 500.
+    if "\x00" in value:
+        raise ValueError("cannot contain NUL characters")
+    return value
+
+
 def check_http_url(value: str) -> str:
+    reject_nul(value)
     # URLs are served publicly and rendered as links, so block schemes like javascript:.
     parts = urlsplit(value)
     if parts.scheme not in ("http", "https") or not parts.netloc:
@@ -16,9 +32,19 @@ def check_http_url(value: str) -> str:
     return value
 
 
+Title = Annotated[
+    str,
+    StringConstraints(strip_whitespace=True, min_length=1, max_length=200),
+    AfterValidator(reject_nul),
+]
+Description = Annotated[
+    str, StringConstraints(max_length=5000), AfterValidator(reject_nul)
+]
+
+
 class ResourceCreate(BaseModel):
-    title: str = Field(min_length=1, max_length=200)
-    description: str | None = None
+    title: Title
+    description: Description | None = None
     kind: ResourceKind
     url: str = Field(min_length=1, max_length=2048)
     audiences: list[InquiryRole] = Field(min_length=1)
@@ -47,8 +73,8 @@ class ResourceRead(BaseModel):
 class ResourceUpdate(BaseModel):
     """Partial update: only fields present in the request body are changed."""
 
-    title: str | None = Field(default=None, min_length=1, max_length=200)
-    description: str | None = None
+    title: Title | None = None
+    description: Description | None = None
     kind: ResourceKind | None = None
     url: str | None = Field(default=None, min_length=1, max_length=2048)
     audiences: list[InquiryRole] | None = Field(default=None, min_length=1)
