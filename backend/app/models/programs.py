@@ -1,4 +1,3 @@
-import enum
 import uuid
 from datetime import datetime
 
@@ -8,12 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, str_enum
 from app.models.inquiry import InquiryRole
-
-
-class Region(enum.StrEnum):
-    EAST = "east"
-    MIDDLE = "middle"
-    WEST = "west"
+from app.models.region import Region
 
 
 class Program(Base):

@@ -4,7 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.models.inquiry import InquiryRole
-from app.models.programs import Region
+from app.models.region import Region
 
 
 class ProgramCreate(BaseModel):
