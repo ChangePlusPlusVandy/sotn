@@ -11,6 +11,7 @@ from app.routers import (
     inquiry_notes,
     programs,
     resources,
+    stats,
 )
 
 app = FastAPI(title="SOTN Intake API")
@@ -32,6 +33,7 @@ app.include_router(resources.admin_router)
 
 app.include_router(programs.router)
 app.include_router(programs.admin_router)
+app.include_router(stats.admin_router)
 
 
 @app.get("/health")
