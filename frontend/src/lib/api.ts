@@ -1,7 +1,7 @@
 import createClient from "openapi-fetch";
 import type { paths } from "./api-types";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 // Public routes (no auth needed)
 export const api = createClient<paths>({ baseUrl });
