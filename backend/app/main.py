@@ -9,6 +9,7 @@ from app.routers import (
     inquiries,
     inquiry_activities,
     inquiry_notes,
+    locations,
     programs,
     resources,
 )
@@ -32,6 +33,8 @@ app.include_router(resources.admin_router)
 
 app.include_router(programs.router)
 app.include_router(programs.admin_router)
+
+app.include_router(locations.router)
 
 
 @app.get("/health")

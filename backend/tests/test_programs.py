@@ -3,7 +3,8 @@
 import uuid
 
 from app.models.inquiry import InquiryRole
-from app.models.programs import Program, Region
+from app.models.location import Region
+from app.models.programs import Program
 
 VALID_PROGRAM = {
     "name": "Train4Life",
