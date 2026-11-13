@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 
@@ -12,7 +11,7 @@ const NAV = [
 
 // Navigation only. Layouts don't re-run on client navigation, so each admin page
 // calls auth.protect() itself rather than relying on a check here. Reading the session
-// is request-time work, so pages render inside <Suspense> while the nav prerenders.
+// is request-time work, so pages stream in behind loading.tsx while the nav prerenders.
 const AdminLayout = ({ children }: LayoutProps<"/admin">) => {
   return (
     <div className="flex flex-1">
@@ -27,7 +26,7 @@ const AdminLayout = ({ children }: LayoutProps<"/admin">) => {
         </div>
       </nav>
       <main className="flex-1 p-8">
-        <Suspense fallback={<p>Loading...</p>}>{children}</Suspense>
+        {children}
       </main>
     </div>
   );
