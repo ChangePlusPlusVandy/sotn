@@ -1,4 +1,6 @@
-from app.models.inquiry import Inquiry, InquiryStatus
+import pytest
+
+from app.models.inquiry import Inquiry, InquiryStatus, SubmitterRelationship
 
 VALID = {
     "role": "athlete",
@@ -128,6 +130,129 @@ def test_update_inquiry_must_keep_a_contact_method(staff_client, db):
 
     res = staff_client.patch(
         f"/admin/inquiries/{inquiry.id}", json={"contact_email": None}
+    )
+
+    assert res.status_code == 422
+
+
+def test_create_inquiry_accepts_relationship_and_participant_name(client, db):
+    res = client.post(
+        "/inquiries",
+        json={
+            **VALID,
+            "submitter_relationship": "guardian",
+            "participant_name": "  Sam Athlete  ",
+        },
+    )
+
+    assert res.status_code == 201
+    # The public response still never echoes personal details back.
+    assert set(res.json()) == {"id", "status"}
+
+    inquiry = db.get(Inquiry, res.json()["id"])
+    assert inquiry.submitter_relationship == SubmitterRelationship.GUARDIAN
+    assert inquiry.participant_name == "Sam Athlete"
+
+
+def test_create_inquiry_defaults_to_self_without_participant_name(client, db):
+    res = client.post("/inquiries", json=VALID)
+
+    assert res.status_code == 201
+    inquiry = db.get(Inquiry, res.json()["id"])
+    assert inquiry.submitter_relationship == SubmitterRelationship.SELF
+    assert inquiry.participant_name is None
+
+
+def test_create_inquiry_rejects_unknown_relationship(client):
+    res = client.post("/inquiries", json={**VALID, "submitter_relationship": "cousin"})
+    assert res.status_code == 422
+
+
+def test_create_inquiry_rejects_null_relationship(client):
+    res = client.post("/inquiries", json={**VALID, "submitter_relationship": None})
+    assert res.status_code == 422
+
+
+@pytest.mark.parametrize("name", ["", "   ", "x" * 201, "Sam\x00Athlete"])
+def test_create_inquiry_rejects_bad_participant_name(client, name):
+    res = client.post("/inquiries", json={**VALID, "participant_name": name})
+    assert res.status_code == 422
+
+
+def test_get_inquiry_includes_relationship_and_participant_name(staff_client, db):
+    inquiry = add_inquiry(
+        db, submitter_relationship="teacher", participant_name="Sam Athlete"
+    )
+
+    res = staff_client.get(f"/admin/inquiries/{inquiry.id}")
+
+    assert res.status_code == 200
+    assert res.json()["submitter_relationship"] == "teacher"
+    assert res.json()["participant_name"] == "Sam Athlete"
+
+
+def test_get_inquiry_defaults_relationship_to_self(staff_client, db):
+    inquiry = add_inquiry(db)
+
+    res = staff_client.get(f"/admin/inquiries/{inquiry.id}")
+
+    assert res.json()["submitter_relationship"] == "self"
+    assert res.json()["participant_name"] is None
+
+
+def test_update_inquiry_changes_relationship_and_participant_name(staff_client, db):
+    inquiry = add_inquiry(db, contact_phone="615-555-0100")
+
+    res = staff_client.patch(
+        f"/admin/inquiries/{inquiry.id}",
+        json={"submitter_relationship": "clinician", "participant_name": "Sam"},
+    )
+
+    assert res.status_code == 200
+    assert res.json()["submitter_relationship"] == "clinician"
+    assert res.json()["participant_name"] == "Sam"
+    # Fields that were not sent are untouched.
+    assert res.json()["contact_phone"] == "615-555-0100"
+    assert res.json()["status"] == "new"
+
+
+def test_update_inquiry_can_clear_participant_name(staff_client, db):
+    inquiry = add_inquiry(db, participant_name="Sam Athlete")
+
+    res = staff_client.patch(
+        f"/admin/inquiries/{inquiry.id}", json={"participant_name": None}
+    )
+
+    assert res.status_code == 200
+    assert res.json()["participant_name"] is None
+
+
+def test_update_inquiry_rejects_unknown_relationship(staff_client, db):
+    inquiry = add_inquiry(db)
+
+    res = staff_client.patch(
+        f"/admin/inquiries/{inquiry.id}", json={"submitter_relationship": "cousin"}
+    )
+
+    assert res.status_code == 422
+
+
+def test_update_inquiry_rejects_null_relationship(staff_client, db):
+    inquiry = add_inquiry(db)
+
+    res = staff_client.patch(
+        f"/admin/inquiries/{inquiry.id}", json={"submitter_relationship": None}
+    )
+
+    assert res.status_code == 422
+
+
+@pytest.mark.parametrize("name", ["", "   ", "x" * 201, "Sam\x00Athlete"])
+def test_update_inquiry_rejects_bad_participant_name(staff_client, db, name):
+    inquiry = add_inquiry(db)
+
+    res = staff_client.patch(
+        f"/admin/inquiries/{inquiry.id}", json={"participant_name": name}
     )
 
     assert res.status_code == 422
