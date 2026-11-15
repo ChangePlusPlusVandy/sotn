@@ -5,6 +5,7 @@ VALID = {
     "contact_name": "Test Person",
     "contact_email": "test@example.com",
     "zip_code": "37203",
+    "region": "middle",
     "answers": {"sport_interest": "tennis"},
 }
 
@@ -131,3 +132,50 @@ def test_update_inquiry_must_keep_a_contact_method(staff_client, db):
     )
 
     assert res.status_code == 422
+
+
+def test_create_inquiry_requires_region(client):
+    body = {k: v for k, v in VALID.items() if k != "region"}
+    res = client.post("/inquiries", json=body)
+    assert res.status_code == 422
+
+
+def test_create_inquiry_rejects_unknown_region(client):
+    res = client.post("/inquiries", json={**VALID, "region": "north"})
+    assert res.status_code == 422
+
+
+def test_create_inquiry_rejects_unknown_county(client):
+    res = client.post("/inquiries", json={**VALID, "county": "Atlantis"})
+    assert res.status_code == 422
+
+
+def test_county_and_city_are_optional(client):
+    res = client.post("/inquiries", json=VALID)
+    assert res.status_code == 201
+
+
+def test_create_inquiry_saves_location(client, db):
+    res = client.post(
+        "/inquiries", json={**VALID, "county": "Knox", "city": "Knoxville"}
+    )
+    assert res.status_code == 201
+
+    inquiry = db.get(Inquiry, res.json()["id"])
+    assert inquiry.region == "middle"
+    assert inquiry.county == "Knox"
+    assert inquiry.city == "Knoxville"
+
+
+def test_admin_filters_by_region_and_county(staff_client, db):
+    add_inquiry(db, contact_name="East Knox", region="east", county="Knox")
+    add_inquiry(db, contact_name="East Sevier", region="east", county="Sevier")
+    add_inquiry(db, contact_name="West Shelby", region="west", county="Shelby")
+
+    res = staff_client.get("/admin/inquiries", params={"region": "east"})
+    names = {item["contact_name"] for item in res.json()["items"]}
+    assert names == {"East Knox", "East Sevier"}
+
+    res = staff_client.get("/admin/inquiries", params={"county": "Shelby"})
+    names = {item["contact_name"] for item in res.json()["items"]}
+    assert names == {"West Shelby"}

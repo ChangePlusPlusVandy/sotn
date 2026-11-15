@@ -7,6 +7,7 @@ from sqlalchemy import func, or_, select
 from app.core.auth import get_current_staff
 from app.core.db import DbSession
 from app.models.inquiry import Inquiry, InquiryRole, InquiryStatus
+from app.models.location import Region
 from app.schemas.common import Page
 from app.schemas.inquiry import (
     InquiryConfirmation,
@@ -45,6 +46,8 @@ def list_inquiries(
     q: Annotated[str | None, Query(description="Search name or email")] = None,
     page: Annotated[int, Query(ge=1)] = 1,
     page_size: Annotated[int, Query(ge=1, le=100)] = 25,
+    region: Region | None = None,
+    county: str | None = None,
 ):
     """List inquiries, newest first, with optional filters and search."""
 
@@ -53,6 +56,10 @@ def list_inquiries(
         query = query.where(Inquiry.status == status)
     if role:
         query = query.where(Inquiry.role == role)
+    if region:
+        query = query.where(Inquiry.region == region)
+    if county:
+        query = query.where(Inquiry.county == county)
     if q:
         query = query.where(
             or_(

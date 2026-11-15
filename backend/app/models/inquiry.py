@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, str_enum
+from app.models.location import Region
 
 
 class InquiryRole(enum.StrEnum):
@@ -39,6 +40,9 @@ class Inquiry(Base):
     contact_email: Mapped[str | None] = mapped_column(String(320))
     contact_phone: Mapped[str | None] = mapped_column(String(32))
     zip_code: Mapped[str] = mapped_column(String(10))
+    region: Mapped[Region | None] = mapped_column(str_enum(Region))
+    county: Mapped[str | None] = mapped_column(String(100))
+    city: Mapped[str | None] = mapped_column(String(200))
 
     # Role-specific form fields; the approved field list per role is still TBD (PRD INT-02).
     answers: Mapped[dict] = mapped_column(JSONB, default=dict)

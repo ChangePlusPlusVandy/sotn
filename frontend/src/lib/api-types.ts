@@ -314,6 +314,26 @@ export interface paths {
         patch: operations["update_program_admin_programs__program_id__patch"];
         trace?: never;
     };
+    "/locations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Locations
+         * @description Regions and counties, so the intake form doesn't keep its own copy.
+         */
+        get: operations["get_locations_locations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -493,6 +513,11 @@ export interface components {
             contact_phone?: string | null;
             /** Zip Code */
             zip_code: string;
+            region: components["schemas"]["Region"];
+            /** County */
+            county?: string | null;
+            /** City */
+            city?: string | null;
             /**
              * Answers
              * @default {}
@@ -549,6 +574,11 @@ export interface components {
             contact_email: string | null;
             /** Contact Phone */
             contact_phone: string | null;
+            region: components["schemas"]["Region"] | null;
+            /** County */
+            county: string | null;
+            /** City */
+            city: string | null;
             /** Zip Code */
             zip_code: string;
             /** Answers */
@@ -590,6 +620,16 @@ export interface components {
             contact_phone?: string | null;
             /** Zip Code */
             zip_code?: string | null;
+        };
+        /**
+         * LocationOptions
+         * @description Choices for the intake form's location dropdowns.
+         */
+        LocationOptions: {
+            /** Regions */
+            regions: components["schemas"]["Region"][];
+            /** Counties */
+            counties: string[];
         };
         /** Page[FollowUpRead] */
         Page_FollowUpRead_: {
@@ -878,6 +918,8 @@ export interface operations {
                 q?: string | null;
                 page?: number;
                 page_size?: number;
+                region?: components["schemas"]["Region"] | null;
+                county?: string | null;
             };
             header?: never;
             path?: never;
@@ -1610,6 +1652,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_locations_locations_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LocationOptions"];
                 };
             };
         };
