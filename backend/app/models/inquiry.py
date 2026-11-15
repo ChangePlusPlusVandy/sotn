@@ -26,6 +26,15 @@ class InquiryStatus(enum.StrEnum):
     CLOSED = "closed"
 
 
+class SubmitterRelationship(enum.StrEnum):
+    SELF = "self"
+    GUARDIAN = "guardian"
+    TEACHER = "teacher"
+    CLINICIAN = "clinician"
+    OTHER = "other"
+    # Placeholder values: the official choices are still being clarified.
+
+
 class Inquiry(Base):
     __tablename__ = "inquiries"
 
@@ -35,6 +44,14 @@ class Inquiry(Base):
     status: Mapped[InquiryStatus] = mapped_column(
         str_enum(InquiryStatus), default=InquiryStatus.NEW
     )
+    # Who is filling in the form, and (when it is not the participant) who it is about.
+    # server_default keeps rows created before this column existed valid.
+    submitter_relationship: Mapped[SubmitterRelationship] = mapped_column(
+        str_enum(SubmitterRelationship),
+        default=SubmitterRelationship.SELF,
+        server_default=SubmitterRelationship.SELF.value,
+    )
+    participant_name: Mapped[str | None] = mapped_column(String(200))
     contact_name: Mapped[str] = mapped_column(String(200))
     contact_email: Mapped[str | None] = mapped_column(String(320))
     contact_phone: Mapped[str | None] = mapped_column(String(32))
