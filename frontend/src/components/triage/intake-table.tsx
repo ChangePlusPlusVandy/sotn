@@ -30,7 +30,7 @@ export const IntakeRow = ({ inquiry }: { inquiry: Inquiry }) => {
 
 export const IntakeTable = ({ inquiries }: { inquiries: Inquiry[] }) => {
   return (
-    <div className="overflow-hidden rounded-xl border border-sotn-grey-light bg-white">
+    <div className="overflow-x-auto rounded-xl border border-sotn-grey-light bg-white">
       <table className="w-full text-left text-sm leading-4">
         <thead className="border-b border-sotn-grey-light bg-sotn-biscuit text-sotn-grey-dark uppercase">
           <tr>
