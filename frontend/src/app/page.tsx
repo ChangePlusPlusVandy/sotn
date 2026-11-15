@@ -25,7 +25,7 @@ const Home = () => {
   return (
     <>
       <SiteHeader />
-      <main className="grid flex-1 items-center gap-16 px-8 pb-24 md:grid-cols-2 md:px-16">
+      <main className="grid flex-1 items-center gap-10 px-5 pb-16 md:grid-cols-2 md:gap-16 md:px-16 md:pb-24">
         <Hero
           heading={
             <>

@@ -9,10 +9,13 @@ export type Step = {
 
 const Steps = ({ steps }: { steps: Step[] }) => {
   return (
-    <ol className="flex flex-col gap-8">
+    <ol className="flex flex-col gap-4 md:gap-8">
       {steps.map((step, index) => (
-        <li key={step.title} className="flex items-center gap-4">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-brand text-white [&_svg]:size-6">
+        <li
+          key={step.title}
+          className="flex items-center gap-4 rounded-2xl border border-neutral-400 p-4 md:rounded-none md:border-0 md:p-0"
+        >
+          <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand text-white md:size-14 [&_svg]:size-6">
             {step.icon}
           </div>
           <div>

@@ -13,7 +13,7 @@ type HeroProps = {
 const Hero = ({ heading, description, ctaLabel, ctaHref }: HeroProps) => {
   return (
     <div className="flex flex-col items-start gap-8">
-      <h1 className="text-5xl leading-tight font-bold tracking-tight text-neutral-900 md:text-6xl">
+      <h1 className="text-4xl leading-tight font-bold tracking-tight text-neutral-900 md:text-6xl">
         {heading}
       </h1>
       <p className="max-w-xl text-lg text-muted-foreground">{description}</p>
