@@ -48,6 +48,26 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* SOTN palette from the Figma style guide */
+@theme {
+  --color-sotn-biscuit: #eceadb;
+  --color-sotn-grey-light: #bcbec0;
+  --color-sotn-grey-mid: #94958d;
+  --color-sotn-grey-dark: #636359;
+  --color-sotn-blue-mid: #0063a5;
+  --color-sotn-blue-dark: #013b82;
+  --color-sotn-yellow-mid: #e5a812;
+  --color-sotn-yellow-dark: #b18906;
+  --color-sotn-purple-mid: #6f2c91;
+  --color-sotn-purple-dark: #3d1063;
+  --color-sotn-green-mid: #88ac2e;
+  --color-sotn-green-dark: #28752b;
+  --color-sotn-magenta-mid: #c40063;
+  --color-sotn-magenta-dark: #8b0037;
+  --color-sotn-red-mid: #c4161c;
+  --color-sotn-red-dark: #820000;
+}
+
 :root {
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
