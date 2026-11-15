@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, str_enum
+from app.models.region import Region
 
 
 class InquiryRole(enum.StrEnum):
@@ -26,6 +27,14 @@ class InquiryStatus(enum.StrEnum):
     CLOSED = "closed"
 
 
+# Statuses that mean staff have not contacted the submitter yet.
+AWAITING_CONTACT_STATUSES = (
+    InquiryStatus.NEW,
+    InquiryStatus.NEEDS_REVIEW,
+    InquiryStatus.ASSIGNED,
+)
+
+
 class Inquiry(Base):
     __tablename__ = "inquiries"
 
@@ -39,6 +48,8 @@ class Inquiry(Base):
     contact_email: Mapped[str | None] = mapped_column(String(320))
     contact_phone: Mapped[str | None] = mapped_column(String(32))
     zip_code: Mapped[str] = mapped_column(String(10))
+    # Nullable until the intake form starts collecting region on every submission.
+    region: Mapped[Region | None] = mapped_column(str_enum(Region), nullable=True)
 
     # Role-specific form fields; the approved field list per role is still TBD (PRD INT-02).
     answers: Mapped[dict] = mapped_column(JSONB, default=dict)

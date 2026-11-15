@@ -4,6 +4,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.models.inquiry import InquiryRole, InquiryStatus
+from app.models.region import Region
 
 ZIP_PATTERN = r"^\d{5}(-\d{4})?$"
 
@@ -42,6 +43,7 @@ class InquiryRead(BaseModel):
     contact_email: str | None
     contact_phone: str | None
     zip_code: str
+    region: Region | None
     answers: dict
     created_at: datetime
     updated_at: datetime
@@ -55,6 +57,7 @@ class InquiryUpdate(BaseModel):
     contact_email: str | None = Field(default=None, max_length=320)
     contact_phone: str | None = Field(default=None, max_length=32)
     zip_code: str | None = Field(default=None, pattern=ZIP_PATTERN)
+    region: Region | None = None
 
     @field_validator("status", "contact_name", "zip_code")
     @classmethod
