@@ -66,7 +66,7 @@ Add `-v` to list each test as it runs. Tests roll back their changes, so your lo
 - **Database** (from the repo root):
   ```bash
   docker compose down      # stop the database; data is kept
-  docker compose down -v   # stop and delete all data (then rerun `alembic upgrade head`)
+  docker compose down -v   # stop and delete all data (then rerun `alembic upgrade head` and `python -m app.seed`)
   ```
   Leaving the database running is fine. Quitting Docker Desktop or restarting your computer also stops it, so run `docker compose up -d` again next time.
 
@@ -104,6 +104,15 @@ Inside psql: `\dt` lists tables, `\d inquiry` shows a table's columns, `SELECT *
 4. Right-click a table and choose **Select Top 1000** to see its rows, or click **New Query** to run your own SQL. Ignore `alembic_version`; it only tracks which migration has run.
 
 No tables? Run `uv run alembic upgrade head` in `backend/`.
+
+## Sample data
+
+Each dev's database is local, so it starts empty. To fill it with sample inquiries, programs and resources, from `backend/`:
+```bash
+uv run python -m app.seed           # add sample rows that aren't there yet
+uv run python -m app.seed --reset   # delete every row in every table, then seed
+```
+Without `--reset`, it never changes existing rows, so it's safe to rerun after pulling new sample data. `--reset` also deletes anything you added yourself. Notes, activities and follow-ups aren't seeded because they need a real staff member's Clerk ID; create them through the app. The sample data lives in `backend/app/seed.py`.
 
 ## Notes
 
