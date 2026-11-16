@@ -32,4 +32,10 @@ Requires [Docker Desktop](https://docs.docker.com/desktop), [uv](https://docs.as
    uv run alembic upgrade head
    ```
 
+5. **Add sample data** (from `backend/`)
+   ```bash
+   uv run python -m app.seed
+   ```
+   Adds sample inquiries, programs and resources to your local database. See [Sample data](README.md#sample-data) in the README.
+
 Setup is done. Continue with [Running the app](README.md#running-the-app) in the README.

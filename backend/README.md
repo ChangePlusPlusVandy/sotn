@@ -7,6 +7,7 @@ Setup is in the [root README](../README.md). This file covers how the code is la
 ```
 app/
   main.py          App setup: CORS, routers, /health
+  seed.py          Sample data for local dev: uv run python -m app.seed [--reset]
   core/            Infrastructure shared by every feature
     config.py      Settings, read from .env
     db.py          Engine and the DbSession dependency
