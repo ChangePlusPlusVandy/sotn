@@ -1,8 +1,10 @@
+import { IntakeForm } from "./intake-form";
+
 const IntakePage = () => {
   return (
-    <main className="flex flex-col gap-4 p-8">
+    <main className="mx-auto flex w-full max-w-xl flex-col gap-6 p-8">
       <h1 className="text-2xl font-semibold">Get involved</h1>
-      <p>TODO: Multi-step intake form; the questions depend on earlier answers. Submits to POST /inquiries.</p>
+      <IntakeForm />
     </main>
   );
 };

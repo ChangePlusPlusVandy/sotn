@@ -10,11 +10,16 @@ from app.models.base import Base, str_enum
 
 
 class InquiryRole(enum.StrEnum):
+    # Order and labels follow step 2 of the intake form.
     ATHLETE = "athlete"
+    UNIFIED_PARTNER = "unified_partner"
+    CAREGIVER = "caregiver"  # caregiver, parent, or conservator
+    COACH = "coach"
     VOLUNTEER = "volunteer"
-    PARTNER = "partner"
-    DONOR = "donor"
-    # Add the correct values
+    PARTNER = "partner"  # community partner, vendor, or venue
+    DONOR = "donor"  # donor, sponsor, or partner
+    FIRST_RESPONDER = "first_responder"  # law enforcement or first responder
+    EMPLOYMENT = "employment"  # interested in employment or an internship
 
 
 class InquiryStatus(enum.StrEnum):

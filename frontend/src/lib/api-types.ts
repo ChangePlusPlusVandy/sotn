@@ -570,7 +570,7 @@ export interface components {
          * InquiryRole
          * @enum {string}
          */
-        InquiryRole: "athlete" | "volunteer" | "partner" | "donor";
+        InquiryRole: "athlete" | "unified_partner" | "caregiver" | "coach" | "volunteer" | "partner" | "donor" | "first_responder" | "employment";
         /**
          * InquiryStatus
          * @enum {string}

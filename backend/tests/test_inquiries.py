@@ -1,4 +1,4 @@
-from app.models.inquiry import Inquiry, InquiryStatus
+from app.models.inquiry import Inquiry, InquiryRole, InquiryStatus
 
 VALID = {
     "role": "athlete",
@@ -31,6 +31,13 @@ def test_create_inquiry_requires_contact_method(client):
 def test_create_inquiry_rejects_unknown_role(client):
     res = client.post("/inquiries", json={**VALID, "role": "astronaut"})
     assert res.status_code == 422
+
+
+def test_create_inquiry_accepts_every_intake_role(client, db):
+    for role in InquiryRole:
+        res = client.post("/inquiries", json={**VALID, "role": role})
+        assert res.status_code == 201
+        assert db.get(Inquiry, res.json()["id"]).role == role
 
 
 def test_create_inquiry_rejects_bad_zip(client):
