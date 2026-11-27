@@ -181,6 +181,8 @@ def test_admin_filters_by_region_and_county(staff_client, db):
     res = staff_client.get("/admin/inquiries", params={"county": "Shelby"})
     names = {item["contact_name"] for item in res.json()["items"]}
     assert names == {"West Shelby"}
+
+
 def test_create_inquiry_accepts_relationship_and_participant_name(client, db):
     res = client.post(
         "/inquiries",
