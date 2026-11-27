@@ -20,6 +20,9 @@ from app.schemas.stats import (
 # Staff dashboard uses Tennessee local calendar days for "today" and by_day buckets.
 TN_TZ = ZoneInfo("America/Chicago")
 
+# Longest allowed range, in days counting both ends: 2 years, including a leap day.
+MAX_RANGE_DAYS = 731
+
 admin_router = APIRouter(
     prefix="/admin/stats",
     tags=["admin: stats"],
@@ -36,11 +39,13 @@ def _parse_range(
     range_start = start or (range_end - timedelta(days=29))
     if range_start > range_end:
         raise HTTPException(422, "start must be on or before end")
+    if (range_end - range_start).days + 1 > MAX_RANGE_DAYS:
+        raise HTTPException(422, f"range must be at most {MAX_RANGE_DAYS} days")
     return range_start, range_end
 
 
 def _day_bounds(day: date) -> tuple[datetime, datetime]:
-    """Inclusive local-day window as UTC timestamps for created_at filters."""
+    """Local-day window [midnight, next midnight) in UTC, for created_at filters."""
     start = datetime(day.year, day.month, day.day, tzinfo=TN_TZ)
     end = start + timedelta(days=1)
     return start.astimezone(UTC), end.astimezone(UTC)

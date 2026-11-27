@@ -24,6 +24,15 @@ def test_stats_rejects_inverted_range(staff_client):
     assert res.status_code == 422
 
 
+def test_stats_rejects_range_over_two_years(staff_client):
+    # 2024-10-01 through 2026-10-02 is 732 days, one over the limit.
+    res = staff_client.get(
+        "/admin/stats",
+        params={"start": "2024-10-01", "end": "2026-10-02"},
+    )
+    assert res.status_code == 422
+
+
 def test_stats_counts_and_breakdowns(staff_client, db):
     today = datetime.now(TN_TZ).date()
     yesterday = today - timedelta(days=1)
