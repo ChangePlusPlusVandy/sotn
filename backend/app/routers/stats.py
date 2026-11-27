@@ -87,9 +87,7 @@ def get_admin_stats(
         Inquiry.created_at < range_end_utc,
     )
 
-    total = (
-        db.scalar(select(func.count()).select_from(Inquiry).where(*in_range)) or 0
-    )
+    total = db.scalar(select(func.count()).select_from(Inquiry).where(*in_range)) or 0
 
     # Bucket by Tennessee local date so charts match staff calendar days.
     # literal_column keeps the timezone name out of bind params so SELECT/GROUP BY match.
