@@ -13,6 +13,7 @@ from pydantic import (
 )
 
 from app.models.inquiry import InquiryRole, InquiryStatus, SubmitterRelationship
+from app.models.location import TN_COUNTIES, Region
 from app.schemas.resource import reject_nul
 
 ZIP_PATTERN = r"^\d{5}(-\d{4})?$"
@@ -33,6 +34,19 @@ class InquiryCreate(BaseModel):
     contact_email: str | None = Field(default=None, max_length=320)
     contact_phone: str | None = Field(default=None, max_length=32)
     zip_code: str = Field(pattern=ZIP_PATTERN)
+    region: Region
+    county: str | None = None
+    city: Annotated[str, Field(max_length=200), AfterValidator(reject_nul)] | None = (
+        None
+    )
+
+    @field_validator("county")
+    @classmethod
+    def county_in_list(cls, value):
+        if value is not None and value not in TN_COUNTIES:
+            raise ValueError("Invalid county")
+        return value
+
     answers: dict = {}
 
     @model_validator(mode="after")
@@ -62,6 +76,9 @@ class InquiryRead(BaseModel):
     contact_name: str
     contact_email: str | None
     contact_phone: str | None
+    region: Region | None
+    county: str | None
+    city: str | None
     zip_code: str
     answers: dict
     created_at: datetime

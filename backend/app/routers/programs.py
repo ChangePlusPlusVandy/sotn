@@ -8,7 +8,8 @@ from sqlalchemy.exc import IntegrityError
 from app.core.auth import get_current_staff
 from app.core.db import DbSession
 from app.models.inquiry import InquiryRole
-from app.models.programs import Program, Region
+from app.models.location import Region
+from app.models.programs import Program
 from app.schemas.common import Page
 from app.schemas.programs import (
     ProgramAdmin,
