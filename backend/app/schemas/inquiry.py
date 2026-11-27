@@ -36,7 +36,9 @@ class InquiryCreate(BaseModel):
     zip_code: str = Field(pattern=ZIP_PATTERN)
     region: Region
     county: str | None = None
-    city: str | None = Field(default=None, max_length=200)
+    city: Annotated[str, Field(max_length=200), AfterValidator(reject_nul)] | None = (
+        None
+    )
 
     @field_validator("county")
     @classmethod

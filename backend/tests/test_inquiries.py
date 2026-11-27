@@ -169,6 +169,12 @@ def test_create_inquiry_saves_location(client, db):
     assert inquiry.city == "Knoxville"
 
 
+@pytest.mark.parametrize("city", ["x" * 201, "Knox\x00ville"])
+def test_create_inquiry_rejects_bad_city(client, city):
+    res = client.post("/inquiries", json={**VALID, "city": city})
+    assert res.status_code == 422
+
+
 def test_admin_filters_by_region_and_county(staff_client, db):
     add_inquiry(db, contact_name="East Knox", region="east", county="Knox")
     add_inquiry(db, contact_name="East Sevier", region="east", county="Sevier")
