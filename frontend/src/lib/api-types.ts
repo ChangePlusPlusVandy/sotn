@@ -485,6 +485,10 @@ export interface components {
         /** InquiryCreate */
         InquiryCreate: {
             role: components["schemas"]["InquiryRole"];
+            /** @default self */
+            submitter_relationship: components["schemas"]["SubmitterRelationship"];
+            /** Participant Name */
+            participant_name?: string | null;
             /** Contact Name */
             contact_name: string;
             /** Contact Email */
@@ -543,6 +547,9 @@ export interface components {
             id: string;
             role: components["schemas"]["InquiryRole"];
             status: components["schemas"]["InquiryStatus"];
+            submitter_relationship: components["schemas"]["SubmitterRelationship"];
+            /** Participant Name */
+            participant_name: string | null;
             /** Contact Name */
             contact_name: string;
             /** Contact Email */
@@ -582,6 +589,9 @@ export interface components {
          */
         InquiryUpdate: {
             status?: components["schemas"]["InquiryStatus"] | null;
+            submitter_relationship?: components["schemas"]["SubmitterRelationship"] | null;
+            /** Participant Name */
+            participant_name?: string | null;
             /** Contact Name */
             contact_name?: string | null;
             /** Contact Email */
@@ -814,6 +824,11 @@ export interface components {
             /** Is Published */
             is_published?: boolean | null;
         };
+        /**
+         * SubmitterRelationship
+         * @enum {string}
+         */
+        SubmitterRelationship: "self" | "guardian" | "teacher" | "clinician" | "other";
         /** ValidationError */
         ValidationError: {
             /** Location */
