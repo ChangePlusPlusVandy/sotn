@@ -1,7 +1,7 @@
 """add location to inquiries
 
 Revision ID: 3ed55018163f
-Revises: f570598a117d
+Revises: b6829027d741
 Create Date: 2026-11-08 20:43:41.782120
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = '3ed55018163f'
-down_revision: Union[str, Sequence[str], None] = 'f570598a117d'
+down_revision: Union[str, Sequence[str], None] = 'b6829027d741'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
