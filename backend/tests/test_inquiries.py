@@ -136,7 +136,6 @@ def test_update_inquiry_must_keep_a_contact_method(staff_client, db):
     assert res.status_code == 422
 
 
-<<<<<<< HEAD
 def test_create_inquiry_requires_region(client):
     body = {k: v for k, v in VALID.items() if k != "region"}
     res = client.post("/inquiries", json=body)
@@ -182,7 +181,6 @@ def test_admin_filters_by_region_and_county(staff_client, db):
     res = staff_client.get("/admin/inquiries", params={"county": "Shelby"})
     names = {item["contact_name"] for item in res.json()["items"]}
     assert names == {"West Shelby"}
-=======
 def test_create_inquiry_accepts_relationship_and_participant_name(client, db):
     res = client.post(
         "/inquiries",
@@ -304,4 +302,3 @@ def test_update_inquiry_rejects_bad_participant_name(staff_client, db, name):
     )
 
     assert res.status_code == 422
->>>>>>> origin/main
