@@ -314,26 +314,6 @@ export interface paths {
         patch: operations["update_program_admin_programs__program_id__patch"];
         trace?: never;
     };
-    "/locations": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Locations
-         * @description Regions and counties, so the intake form doesn't keep its own copy.
-         */
-        get: operations["get_locations_locations_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/health": {
         parameters: {
             query?: never;
@@ -505,6 +485,10 @@ export interface components {
         /** InquiryCreate */
         InquiryCreate: {
             role: components["schemas"]["InquiryRole"];
+            /** @default self */
+            submitter_relationship: components["schemas"]["SubmitterRelationship"];
+            /** Participant Name */
+            participant_name?: string | null;
             /** Contact Name */
             contact_name: string;
             /** Contact Email */
@@ -513,11 +497,6 @@ export interface components {
             contact_phone?: string | null;
             /** Zip Code */
             zip_code: string;
-            region: components["schemas"]["Region"];
-            /** County */
-            county?: string | null;
-            /** City */
-            city?: string | null;
             /**
              * Answers
              * @default {}
@@ -568,17 +547,15 @@ export interface components {
             id: string;
             role: components["schemas"]["InquiryRole"];
             status: components["schemas"]["InquiryStatus"];
+            submitter_relationship: components["schemas"]["SubmitterRelationship"];
+            /** Participant Name */
+            participant_name: string | null;
             /** Contact Name */
             contact_name: string;
             /** Contact Email */
             contact_email: string | null;
             /** Contact Phone */
             contact_phone: string | null;
-            region: components["schemas"]["Region"] | null;
-            /** County */
-            county: string | null;
-            /** City */
-            city: string | null;
             /** Zip Code */
             zip_code: string;
             /** Answers */
@@ -612,6 +589,9 @@ export interface components {
          */
         InquiryUpdate: {
             status?: components["schemas"]["InquiryStatus"] | null;
+            submitter_relationship?: components["schemas"]["SubmitterRelationship"] | null;
+            /** Participant Name */
+            participant_name?: string | null;
             /** Contact Name */
             contact_name?: string | null;
             /** Contact Email */
@@ -620,16 +600,6 @@ export interface components {
             contact_phone?: string | null;
             /** Zip Code */
             zip_code?: string | null;
-        };
-        /**
-         * LocationOptions
-         * @description Choices for the intake form's location dropdowns.
-         */
-        LocationOptions: {
-            /** Regions */
-            regions: components["schemas"]["Region"][];
-            /** Counties */
-            counties: string[];
         };
         /** Page[FollowUpRead] */
         Page_FollowUpRead_: {
@@ -854,6 +824,11 @@ export interface components {
             /** Is Published */
             is_published?: boolean | null;
         };
+        /**
+         * SubmitterRelationship
+         * @enum {string}
+         */
+        SubmitterRelationship: "self" | "guardian" | "teacher" | "clinician" | "other";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -918,8 +893,6 @@ export interface operations {
                 q?: string | null;
                 page?: number;
                 page_size?: number;
-                region?: components["schemas"]["Region"] | null;
-                county?: string | null;
             };
             header?: never;
             path?: never;
@@ -1652,26 +1625,6 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_locations_locations_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LocationOptions"];
                 };
             };
         };
